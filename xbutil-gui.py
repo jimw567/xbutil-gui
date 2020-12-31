@@ -20,7 +20,8 @@ status_codes = {
 }
 main_window = tk.Tk()
 main_window.title('Xilinx xbutil GUI')
-main_window.iconbitmap('resources/xbutil-icon.ico')
+main_window_icon = tk.PhotoImage(file='resources/xbutil-icon.png')
+main_window.iconphoto(True, main_window_icon)
 figure_dpi = 100
 figure_hist = plt.Figure(figsize=(10, 5), dpi=figure_dpi)
 plot_hist = figure_hist.add_subplot(111)
