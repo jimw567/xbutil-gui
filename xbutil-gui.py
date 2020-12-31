@@ -57,6 +57,10 @@ def animate_plot(iter):
     if iter % refresh_interval > 0:
         return
 
+    if len(power_hist[::refresh_interval]) == 0:
+        # nothing to plot yet
+        return
+
     plot_hist.clear()
     if plot_type == 'power':
         y_hist_dict = {'time': time_hist[::refresh_interval], 'power': power_hist[::refresh_interval]}
