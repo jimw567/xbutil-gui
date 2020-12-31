@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -18,16 +19,31 @@ status_codes = {
         'message': 'ERROR: xbutil not found. Please set up XRT environment before running this application.'
     }
 }
-main_window = tk.Tk()
-main_window.title('Xilinx xbutil GUI')
-main_window_icon = tk.PhotoImage(file='resources/xbutil-icon.png')
-main_window.iconphoto(True, main_window_icon)
+
+# root window
+root_window = tk.Tk()
+root_window.title('Xilinx xbutil GUI')
+root_window_icon = tk.PhotoImage(file='resources/xbutil-icon.png')
+root_window.iconphoto(True, root_window_icon)
+root_window.grid_columnconfigure(0, weight=1)
+root_window.grid_columnconfigure(1, weight=1)
+root_window.grid_columnconfigure(2, weight=1)
+root_window.grid_columnconfigure(3, weight=1)
+root_window.grid_rowconfigure(1, weight=1)
+
+# Add a dropdown list for plot type
+lable_plot_type = ttk.Label(root_window, text="Plot type", width=10).grid(row=0, column=1, sticky='e')
+combo_plot_type = ttk.Combobox(root_window, width=27)
+combo_plot_type['values'] = ('power', 'temperature', 'voltage')
+combo_plot_type.grid(row=0, column=2, sticky='w')
+
 figure_dpi = 100
 figure_hist = plt.Figure(figsize=(10, 5), dpi=figure_dpi)
 plot_hist = figure_hist.add_subplot(111)
-canvas_hist = FigureCanvasTkAgg(figure_hist, main_window)
-canvas_hist.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-plot_type = 'temp'  # valid values: power, temp, volt
+canvas_hist = FigureCanvasTkAgg(figure_hist, root_window)
+canvas_hist.get_tk_widget().grid(row=1, columnspan=4, sticky='nsew')
+
+plot_type = 'power'
 time_hist = []
 power_hist = []
 temp_hist = []
@@ -37,7 +53,6 @@ scheduler = BackgroundScheduler(daemon=True)
 
 def get_xbutil_dump(json_file):
     timestamp = datetime.datetime.now()
-    #print('DEBUG:', timestamp, 'get_xbutil_dump from', json_file)
     if json_file is None:
         command = ['xbutil', 'dump']
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -54,7 +69,13 @@ def get_xbutil_dump(json_file):
 
 
 def animate_plot(iter):
-    if iter % refresh_interval > 0:
+    global plot_type
+
+    selected_plot_type = combo_plot_type.get()
+    if (iter % refresh_interval == 0) or (selected_plot_type != plot_type):
+        plot_type = selected_plot_type
+    else:
+        # no need to do anything
         return
 
     if len(power_hist[::refresh_interval]) == 0:
@@ -68,7 +89,7 @@ def animate_plot(iter):
         y_hist_df.plot(kind='line', legend=False, x='time', y='power', ax=plot_hist,
                        color='r', marker='.', fontsize=10)
         plot_hist.set_title('Power(w) History')
-    elif plot_type == 'temp':
+    elif plot_type == 'temperature':
         y_hist_dict = {'time': time_hist[::refresh_interval], 'temp': temp_hist[::refresh_interval]}
         y_hist_df = DataFrame(y_hist_dict, columns=['time', 'temp'])
         y_hist_df.plot(kind='line', legend=False, x='time', y='temp', ax=plot_hist,
@@ -83,7 +104,7 @@ def xbutil_gui_main():
     parser.add_argument('--json-file', dest='json_file', default=None,
                         help='Specify a JSON file for getting the data')
     parser.add_argument('--plot-type', dest='plot_type', default='power',
-                        help='Specify plot type: power, temp, or volt')
+                        help='Specify plot type: power, temperature, or voltage')
     args = parser.parse_args()
     plot_type = args.plot_type
     if args.json_file is None and shutil.which('xbutil') is None:
@@ -97,7 +118,8 @@ def xbutil_gui_main():
 
     # refresh every 1 second
     animation_power = animation.FuncAnimation(figure_hist, animate_plot, interval=1000)
-    main_window.mainloop()
+    combo_plot_type.current(0)
+    root_window.mainloop()
 
 
 if __name__ == '__main__':
