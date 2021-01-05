@@ -79,15 +79,20 @@ def get_xbutil_dump(json_file):
         command = ['xbutil', 'dump']
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         xbutil_dump = p.stdout.read()
-        xbutil_dump_json = json.loads(xbutil_dump.decode('utf-8'))
+        try:
+            xbutil_dump_json = json.loads(xbutil_dump.decode('utf-8'))
+        except json.decoder.JSONDecodeError:
+            print('ERROR: cannot decode json', xbutil_dump)
+            xbutil_dump_json = None
     else:
         with open(json_file, 'r') as fp:
             xbutil_dump_json = json.load(fp)
 
-    #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-    time_hist.append(timestamp.strftime("%m/%d %H:%M"))
-    power_hist.append(int(xbutil_dump_json['board']['physical']['power']))
-    temp_hist.append(float(xbutil_dump_json['board']['physical']['thermal']['fpga_temp']))
+    if xbutil_dump_json is not None:
+        #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+        time_hist.append(timestamp.strftime("%m/%d %H:%M"))
+        power_hist.append(int(xbutil_dump_json['board']['physical']['power']))
+        temp_hist.append(float(xbutil_dump_json['board']['physical']['thermal']['fpga_temp']))
 
 
 def animate_plot(iter):
@@ -124,7 +129,6 @@ def animate_plot(iter):
         y_hist_df.plot(kind='line', legend=False, x='time', y='temp', ax=plot_hist,
                        color='r', marker='.', fontsize=10)
         plot_hist.set_title('Temperature(C) History')
-    plt.show()
 
 
 def xbutil_gui_main():
