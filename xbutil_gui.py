@@ -34,19 +34,27 @@ root_window.grid_columnconfigure(2, weight=1)
 root_window.grid_columnconfigure(3, weight=1)
 root_window.grid_rowconfigure(1, weight=1)
 
+COMBO_WIDTH = 40
 cur_grid_row = 0
+lable_device = ttk.Label(root_window, text="Device").grid(
+    row=cur_grid_row, column=1, sticky='e')
+combo_device = ttk.Combobox(root_window, width=COMBO_WIDTH)
+combo_device['values'] = []
+combo_device.grid(row=cur_grid_row, column=2, sticky='w')
+cur_grid_row = cur_grid_row + 1
+
 # Add a dropdown list for plot metric
 lable_plot_metric = ttk.Label(root_window, text="Plot metric").grid(
     row=cur_grid_row, column=1, sticky='e')
-combo_plot_metric = ttk.Combobox(root_window)
+combo_plot_metric = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_plot_metric['values'] = ('power', 'temperature', 'voltage')
-combo_plot_metric.grid(row=0, column=2, sticky='w')
+combo_plot_metric.grid(row=cur_grid_row, column=2, sticky='w')
 cur_grid_row = cur_grid_row + 1
 
 ## Auto refresh dropdown
 lable_plot_auto_refresh = ttk.Label(root_window, text="Auto Refresh interval(s)").grid(
     row=cur_grid_row, column=1, sticky='e')
-combo_plot_auto_refresh = ttk.Combobox(root_window)
+combo_plot_auto_refresh = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_plot_auto_refresh['values'] = ('off', '10', '60')
 combo_plot_auto_refresh.grid(row=cur_grid_row, column=2, sticky='w')
 cur_grid_row = cur_grid_row + 1
@@ -74,7 +82,6 @@ scheduler = BackgroundScheduler(daemon=True)
 
 
 def get_xbutil_dump(json_file):
-    timestamp = datetime.datetime.now()
     if json_file is None:
         command = ['xbutil', 'dump']
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -88,11 +95,18 @@ def get_xbutil_dump(json_file):
         with open(json_file, 'r') as fp:
             xbutil_dump_json = json.load(fp)
 
+    return xbutil_dump_json
+
+
+def update_history(json_file):
+    xbutil_dump_json = get_xbutil_dump(json_file)
     if xbutil_dump_json is not None:
         #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-        time_hist.append(timestamp.strftime("%m/%d %H:%M"))
-        power_hist.append(int(xbutil_dump_json['board']['physical']['power']))
-        temp_hist.append(float(xbutil_dump_json['board']['physical']['thermal']['fpga_temp']))
+        time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
+        power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
+        for t in xbutil_dump_json['devices'][0]['thermals']:
+            if t['location_id'] == 'fpga0' and t['is_present']:
+                temp_hist.append(float(t['temp_C']))
 
 
 def animate_plot(iter):
@@ -131,6 +145,16 @@ def animate_plot(iter):
         plot_hist.set_title('Temperature(C) History')
 
 
+def get_devices(json_file):
+    devices = []
+    xbutil_dump_json = get_xbutil_dump(json_file)
+    if xbutil_dump_json is not None:
+        for d in xbutil_dump_json['system']['host']['devices']:
+            devices.append(d['vbnv'])
+
+    return devices
+
+
 def xbutil_gui_main():
     global plot_metric, auto_refresh_interval
 
@@ -146,12 +170,15 @@ def xbutil_gui_main():
         exit(status_codes['XRT_NOT_SETUP']['code'])
 
     # add a background task to get xbutil dump every second
-    scheduler.add_job(get_xbutil_dump, 'interval', [args.json_file], seconds=1)
+    scheduler.add_job(update_history, 'interval', [args.json_file], seconds=1)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown(wait=True))
 
     # refresh every 1 second
     animation_power = animation.FuncAnimation(figure_hist, animate_plot, interval=1000)
+
+    combo_device['values'] = get_devices(args.json_file)
+    combo_device.current(0)
     combo_plot_metric.current(0)
     combo_plot_auto_refresh.current(1)
     root_window.mainloop()

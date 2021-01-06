@@ -1,759 +1,472 @@
 {
-    "version": "1.1.0",
-    "system": {
-        "sysname": "Linux",
-        "release": "3.10.0-1127.el7.x86_64",
-        "version": "#1 SMP Tue Mar 31 23:36:51 UTC 2020",
-        "machine": "x86_64",
-        "glibc": "2.17",
-        "linux": "CentOS Linux 7 (Core)",
-        "cores": "48",
-        "memory": "450901",
-        "model": "Precision 7920 Tower",
-        "now": "Thu Dec 31 03:58:45 2020 GMT"
+    "schema_version": {
+        "schema": "JSON",
+        "creation_date": "Wed Jan  6 13:47:33 2021 GMT"
     },
-    "runtime": {
-        "build": {
-            "version": "2.7.0",
-            "hash": "6f1bf24ac4125fc1ecf318c32d1d8b6fe926f99f",
-            "date": "2020-08-10 11:55:48",
-            "branch": "2020.1_PU1",
-            "xocl": "2.7.0,6f1bf24ac4125fc1ecf318c32d1d8b6fe926f99f",
-            "xclmgmt": "2.7.0,6f1bf24ac4125fc1ecf318c32d1d8b6fe926f99f"
+    "system": {
+        "host": {
+            "os": {
+                "sysname": "Linux",
+                "release": "4.4.0-197-generic",
+                "version": "#229-Ubuntu SMP Wed Nov 25 11:05:42 UTC 2020",
+                "machine": "x86_64",
+                "distribution": "Ubuntu 16.04.5 LTS",
+                "model": "Super Server",
+                "cores": "16",
+                "memory_bytes": "0x3d233c000",
+                "libraries": [
+                    {
+                        "name": "glibc",
+                        "version": "2.23"
+                    }
+                ]
+            },
+            "xrt": {
+                "version": "2.8.0",
+                "branch": "HEAD",
+                "hash": "7c93966ead2dec777b92bdc379893f22b5bd561e",
+                "build_date": "2020-12-21 08:42:34",
+                "drivers": [
+                    {
+                        "name": "xocl",
+                        "version": "2.8.0",
+                        "hash": "7c93966ead2dec777b92bdc379893f22b5bd561e"
+                    },
+                    {
+                        "name": "xclmgmt",
+                        "version": "2.8.0",
+                        "hash": "7c93966ead2dec777b92bdc379893f22b5bd561e"
+                    }
+                ]
+            },
+            "devices": [
+                {
+                    "bdf": "0000:b3:00.1",
+                    "vbnv": "xilinx_u50_gen3x16_xdma_201920_3",
+                    "id": "0xf465b0a3ae8c64f619bc150384ace69b",
+                    "is_ready": "true"
+                }
+            ]
         }
     },
-    "board": {
-        "info": {
-            "dsa_name": "xilinx_u50_gen3x16_xdma_201920_3",
-            "vendor": "0x10ee",
-            "device": "0x5021",
-            "subdevice": "0x000e",
-            "subvendor": "0x10ee",
-            "xmcversion": "201392145",
-            "xmc_oem_id": "0x0(N\/A)",
-            "serial_number": "5001A698P01E",
-            "max_power": "75W",
-            "sc_version": "5.0.27",
-            "ddr_size": "0",
-            "ddr_count": "0",
-            "clock0": "190",
-            "clock1": "500",
-            "clock2": "400",
-            "pcie_speed": "3",
-            "pcie_width": "16",
-            "dma_threads": "2",
-            "mig_calibrated": "true",
-            "idcode": "0x14b77093",
-            "fpga_name": "",
-            "dna": "",
-            "p2p_enabled": "3",
-            "cpu_affinity": "0-11,24-35",
-            "host_mem_size": "0 Byte",
-            "max_host_mem_aperture": "0 Byte",
-            "mac_addr": {
-                "0": "00:0A:35:06:12:C6",
-                "1": "00:0A:35:06:12:C7",
-                "2": "00:0A:35:06:12:C8",
-                "3": "00:0A:35:06:12:C9"
-            }
-        },
-        "interface_uuid": {
-            "uuid0": "862c7020a250293e32036f19956669e5"
-        },
-        "logic_uuid": {
-            "uuid0": "f465b0a3ae8c64f619bc150384ace69b"
-        },
-        "physical": {
-            "thermal": {
-                "pcb": {
-                    "top_front": "49",
-                    "top_rear": "35",
-                    "btm_front": "0"
-                },
-                "fpga_temp": "54",
-                "tcrit_temp": "48",
-                "fan_presence": "P",
-                "fan_speed": "0",
-                "vccint_temp": "51",
-                "hbm_temp": "0",
-                "cage": {
-                    "temp0": "1",
-                    "temp1": "1",
-                    "temp2": "0",
-                    "temp3": "0"
-                }
+    "devices": [
+        {
+            "device_id": "0000:b3:00.1",
+            "aie_metadata": {
+                "description": "Aie_Metadata",
+                "error_msg": "No such query request (124)"
             },
-            "electrical": {
-                "12v_pex": {
-                    "voltage": "11923",
-                    "current": "1850"
-                },
-                "12v_aux": {
-                    "voltage": "0",
-                    "current": "0"
-                },
-                "3v3_pex": {
-                    "voltage": "3329",
-                    "current": "579"
-                },
-                "3v3_aux": {
-                    "voltage": "0",
-                    "current": "0"
-                },
-                "ddr_vpp_bottom": {
-                    "voltage": "0"
-                },
-                "ddr_vpp_top": {
-                    "voltage": "0"
-                },
-                "sys_5v5": {
-                    "voltage": "4946"
-                },
-                "1v2_top": {
-                    "voltage": "0"
-                },
-                "1v2_btm": {
-                    "voltage": "0"
-                },
-                "1v8": {
-                    "voltage": "1804"
-                },
-                "0v85": {
-                    "voltage": "0",
-                    "current": "3700"
-                },
-                "mgt_0v9": {
-                    "voltage": "904"
-                },
-                "12v_sw": {
-                    "voltage": "0"
-                },
-                "mgt_vtt": {
-                    "voltage": "1201"
-                },
-                "vccint": {
-                    "voltage": "849",
-                    "current": "11700"
-                },
-                "vcc3v3": {
-                    "voltage": "3270"
-                },
-                "hbm_1v2": {
-                    "voltage": "1200"
-                },
-                "vpp2v5": {
-                    "voltage": "2483"
-                },
-                "vccint_bram": {
-                    "voltage": "846"
-                },
-                "vccint_io": {
-                    "voltage": "846",
-                    "current": "3700"
-                },
-                "12v_aux1": {
-                    "voltage": "0"
-                },
-                "vcc1v2_i": {
-                    "current": "0"
-                },
-                "v12_in_i": {
-                    "current": "0"
-                },
-                "v12_in_aux0_i": {
-                    "current": "0"
-                },
-                "v12_in_aux1_i": {
-                    "current": "0"
-                },
-                "vccaux": {
-                    "voltage": "3197793587"
-                },
-                "vccaux_pmc": {
-                    "voltage": "3197793587"
-                },
-                "vccram": {
-                    "voltage": "3197793586"
-                }
-            },
-            "power": "23"
-        },
-        "error": {
-            "firewall": {
-                "firewall_level": "0",
-                "firewall_status": "0",
-                "firewall_time": "0",
-                "status": "(GOOD)"
-            }
-        },
-        "pcie_dma": {
-            "transfer_metrics": {
-                "chan": {
-                    "0": {
-                        "h2c": "478 MB",
-                        "c2h": "261 MB"
-                    },
-                    "1": {
-                        "h2c": "344 MB",
-                        "c2h": "256 MB"
+            "mem_topology": {
+                "description": "Memory Information",
+                "board": {
+                    "direct_memory_accesses": {
+                        "type": "pcie xdma",
+                        "metrics": [
+                            {
+                                "channel_id": "0",
+                                "host_to_card_bytes": "0x0",
+                                "card_to_host_bytes": "0x0"
+                            },
+                            {
+                                "channel_id": "1",
+                                "host_to_card_bytes": "0x0",
+                                "card_to_host_bytes": "0x0"
+                            }
+                        ]
                     }
                 }
-            }
-        },
-        "memory": {
-            "mem": {
-                "0": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_HBM",
-                    "temp": "0",
-                    "tag": "HBM[0]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "1": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[1]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "2": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[2]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "3": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[3]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "4": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[4]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "5": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[5]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "6": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[6]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "7": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[7]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "8": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[8]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "9": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[9]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "10": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[10]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "11": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[11]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "12": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[12]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "13": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[13]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "14": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[14]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "15": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[15]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "16": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[16]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "17": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[17]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "18": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[18]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "19": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[19]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "20": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[20]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "21": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[21]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "22": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[22]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "23": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[23]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "24": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[24]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "25": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[25]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "26": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[26]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "27": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[27]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "28": {
-                    "ecc_status": "(None)",
-                    "ecc_ce_cnt": "0",
-                    "ecc_ue_cnt": "0",
-                    "ecc_ce_ffa": "0",
-                    "ecc_ue_ffa": "0",
-                    "type": "MEM_DRAM",
-                    "temp": "0",
-                    "tag": "HBM[28]",
-                    "enabled": "true",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "29": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[29]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "30": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[30]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "31": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "HBM[31]",
-                    "enabled": "false",
-                    "size": "256 MB",
-                    "size_raw": "268435456",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "32": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "PLRAM[0]",
-                    "enabled": "false",
-                    "size": "0 Byte",
-                    "size_raw": "0",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "33": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "PLRAM[1]",
-                    "enabled": "false",
-                    "size": "0 Byte",
-                    "size_raw": "0",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "34": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "PLRAM[2]",
-                    "enabled": "false",
-                    "size": "0 Byte",
-                    "size_raw": "0",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                },
-                "35": {
-                    "type": "**UNUSED**",
-                    "temp": "0",
-                    "tag": "PLRAM[3]",
-                    "enabled": "false",
-                    "size": "0 Byte",
-                    "size_raw": "0",
-                    "mem_usage": "0 Byte",
-                    "mem_usage_raw": "0",
-                    "bo_count": "0"
-                }
-            }
-        },
-        "xclbin": {
-            "uuid": "6c7c53a8-ee23-4847-aaf2-81b5dfaf38e4"
-        },
-        "compute_unit": {
-            "0": {
-                "name": "denseSimilarityKernel:denseSimilarityKernel_0",
-                "base_address": "20971520",
-                "usage": "1",
-                "status": "(IDLE)"
             },
-            "1": {
-                "name": "denseSimilarityKernel:denseSimilarityKernel_1",
-                "base_address": "21037056",
-                "usage": "1",
-                "status": "(IDLE)"
-            }
+            "compute_units": "",
+            "debug_ip_status": {
+                "description": "Status of Debug IPs present in xclbin loaded on device",
+                "info": "Failed to find any Debug IP Layout section in the bitstream loaded on device. Ensure that a valid bitstream with debug IPs (AIM, LAPC) is successfully downloaded."
+            },
+            "asynchronous_errors": "",
+            "electrical": {
+                "power_consumption_watts": "14.476180",
+                "power_rails": [
+                    {
+                        "id": "12v_aux",
+                        "description": "12 Volts Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_pex",
+                        "description": "12 Volts PCI Express",
+                        "voltage": {
+                            "volts": "12.020",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "1.190",
+                            "is_present": "true"
+                        }
+                    },
+                    {
+                        "id": "3v3_pex",
+                        "description": "3.3 Volts PCI Express",
+                        "voltage": {
+                            "volts": "3.315",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.052",
+                            "is_present": "true"
+                        }
+                    },
+                    {
+                        "id": "3v3_aux",
+                        "description": "3.3 Volts Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vccint",
+                        "description": "Internal FPGA Vcc",
+                        "voltage": {
+                            "volts": "0.852",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "6.800",
+                            "is_present": "true"
+                        }
+                    },
+                    {
+                        "id": "vccint_io",
+                        "description": "Internal FPGA Vcc IO",
+                        "voltage": {
+                            "volts": "0.851",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.500",
+                            "is_present": "true"
+                        }
+                    },
+                    {
+                        "id": "ddr_vpp_btm",
+                        "description": "DDR Vpp Bottom",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "ddr_vpp_top",
+                        "description": "DDR Vpp Top",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "5v5_system",
+                        "description": "5.5 Volts System",
+                        "voltage": {
+                            "volts": "5.013",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "1v2_top",
+                        "description": "Vcc 1.2 Volts Top",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_1v2_btm",
+                        "description": "Vcc 1.2 Volts Bottom",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "0v9_vcc",
+                        "description": "0.9 Volts Vcc",
+                        "voltage": {
+                            "volts": "0.902",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_sw",
+                        "description": "12 Volts SW",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "mgt_vtt",
+                        "description": "Mgt Vtt",
+                        "voltage": {
+                            "volts": "1.206",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "3v3_vcc",
+                        "description": "3.3 Volts Vcc",
+                        "voltage": {
+                            "volts": "3.262",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "hbm_1v2",
+                        "description": "1.2 Volts HBM",
+                        "voltage": {
+                            "volts": "1.202",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vpp2v5",
+                        "description": "Vpp 2.5 Volts",
+                        "voltage": {
+                            "volts": "2.506",
+                            "is_present": "true"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_aux1",
+                        "description": "12 Volts Aux1",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc1v2_i",
+                        "description": "Vcc 1.2 Volts i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_i",
+                        "description": "V12 in i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_aux0_i",
+                        "description": "V12 in Aux0 i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_aux1_i",
+                        "description": "V12 in Aux1 i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_aux",
+                        "description": "Vcc Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_aux_pmc",
+                        "description": "Vcc Auxillary Pmc",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_ram",
+                        "description": "Vcc Ram",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    }
+                ]
+            },
+            "mechanical": {
+                "fans": [
+                    {
+                        "location_id": "fpga_fan_1",
+                        "description": "FPGA Fan 1",
+                        "critical_trigger_temp_C": "57",
+                        "speed_rpm": "0",
+                        "is_present": "false"
+                    }
+                ]
+            },
+            "firewall": {
+                "Description": "Firewall Information",
+                "firewall_level": "3",
+                "firewall_status": "0x3",
+                "status": "(READ_RESPONSE_BUSY|RECS_ARREADY_MAX_WAIT)"
+            },
+            "thermals": [
+                {
+                    "location_id": "pcb_top_front",
+                    "description": "PCB Top Front",
+                    "temp_C": "58",
+                    "is_present": "true"
+                },
+                {
+                    "location_id": "pcb_top_rear",
+                    "description": "PCB Top Rear",
+                    "temp_C": "54",
+                    "is_present": "true"
+                },
+                {
+                    "location_id": "pcb_bottom_front",
+                    "description": "PCB Bottom Front",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_0",
+                    "description": "Cage0",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_1",
+                    "description": "Cage1",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_2",
+                    "description": "Cage2",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_3",
+                    "description": "Cage3",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "fpga0",
+                    "description": "FPGA",
+                    "temp_C": "64",
+                    "is_present": "true"
+                },
+                {
+                    "location_id": "int_vcc",
+                    "description": "Int Vcc",
+                    "temp_C": "63",
+                    "is_present": "true"
+                },
+                {
+                    "location_id": "fpga_hbm",
+                    "description": "FPGA HBM",
+                    "temp_C": "0",
+                    "is_present": "false"
+                }
+            ]
         }
-    },
-    "debug_profile": {
-        "device_info": {
-            "error": "0",
-            "device_index": "0",
-            "user_instance": "130",
-            "device_name": "\/dev\/dri\/renderD130"
-        }
-    }
+    ]
 }
+
