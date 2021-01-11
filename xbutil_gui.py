@@ -83,7 +83,8 @@ scheduler = BackgroundScheduler(daemon=True)
 
 def get_xbutil_dump(json_file):
     if json_file is None:
-        command = ['xbutil', 'dump']
+        command = ['/opt/xilinx/xrt/bin/unwrapped/xbutil2', 'examine', 
+                   '--format', 'JSON', '--report', 'all']
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         xbutil_dump = p.stdout.read()
         try:
@@ -102,11 +103,16 @@ def update_history(json_file):
     xbutil_dump_json = get_xbutil_dump(json_file)
     if xbutil_dump_json is not None:
         #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-        time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
-        power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
+        fpga_present = False
         for t in xbutil_dump_json['devices'][0]['thermals']:
             if t['location_id'] == 'fpga0' and t['is_present']:
-                temp_hist.append(float(t['temp_C']))
+                fpga_present = True
+                fpga_temp = float(t['temp_C'])
+
+        if fpga_present:
+            time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
+            power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
+            temp_hist.append(fpga_temp)
 
 
 def animate_plot(iter):
