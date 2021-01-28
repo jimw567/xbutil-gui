@@ -43,6 +43,14 @@ combo_device['values'] = []
 combo_device.grid(row=cur_grid_row, column=2, sticky='w')
 cur_grid_row = cur_grid_row + 1
 
+# compute unit row
+lable_compute_unit = ttk.Label(root_window, text="Compute Uint").grid(
+    row=cur_grid_row, column=1, sticky='e')
+combo_compute_unit = ttk.Combobox(root_window, width=COMBO_WIDTH)
+combo_compute_unit['values'] = []
+combo_compute_unit.grid(row=cur_grid_row, column=2, sticky='w')
+cur_grid_row = cur_grid_row + 1
+
 # Add a dropdown list for plot metric
 lable_plot_metric = ttk.Label(root_window, text="Plot metric").grid(
     row=cur_grid_row, column=1, sticky='e')
@@ -101,18 +109,24 @@ def get_xbutil_dump(json_file):
 
 def update_history(json_file):
     xbutil_dump_json = get_xbutil_dump(json_file)
-    if xbutil_dump_json is not None:
-        #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-        fpga_present = False
-        for t in xbutil_dump_json['devices'][0]['thermals']:
-            if t['location_id'] == 'fpga0' and t['is_present']:
-                fpga_present = True
-                fpga_temp = float(t['temp_C'])
 
-        if fpga_present:
-            time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
-            power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
-            temp_hist.append(fpga_temp)
+    devices_compute_uints = get_devices_compute_uints(xbutil_dump_json)
+    combo_compute_unit['values'] = devices_compute_uints['compute_units'][0]
+
+    if xbutil_dump_json is None:
+        return
+        
+    #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+    fpga_present = False
+    for t in xbutil_dump_json['devices'][0]['thermals']:
+        if t['location_id'] == 'fpga0' and t['is_present']:
+            fpga_present = True
+            fpga_temp = float(t['temp_C'])
+
+    if fpga_present:
+        time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
+        power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
+        temp_hist.append(fpga_temp)
 
 
 def animate_plot(iter):
@@ -151,18 +165,32 @@ def animate_plot(iter):
         plot_hist.set_title('Temperature(C) History')
 
 
-def get_devices(json_file):
+def get_devices_compute_uints(xbutil_dump_json):
+    devices_compute_units = {}
     devices = []
-    xbutil_dump_json = get_xbutil_dump(json_file)
-    if xbutil_dump_json is not None:
-        for d in xbutil_dump_json['system']['host']['devices']:
-            devices.append(d['vbnv'])
+    compute_units = []
+    
+    if xbutil_dump_json is None:
+        return []
 
-    return devices
+    for d in xbutil_dump_json['system']['host']['devices']:
+        devices.append(d['vbnv'])
+
+    for d in xbutil_dump_json['devices']:
+        cur_cu = []
+        if isinstance(d['compute_units'], list):
+            for cu in d['compute_units']:
+                cur_cu.append(cu['name'])
+        compute_units.append(cur_cu)
+
+    devices_compute_units['devices'] = devices
+    devices_compute_units['compute_units'] = compute_units
+
+    return devices_compute_units
 
 
 def xbutil_gui_main():
-    global plot_metric, auto_refresh_interval
+    global plot_metric
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--json-file', dest='json_file', default=None,
@@ -183,8 +211,16 @@ def xbutil_gui_main():
     # refresh every 1 second
     animation_power = animation.FuncAnimation(figure_hist, animate_plot, interval=1000)
 
-    combo_device['values'] = get_devices(args.json_file)
+    xbutil_dump_json = get_xbutil_dump(args.json_file)
+    devices_compute_uints = get_devices_compute_uints(xbutil_dump_json)
+
+    combo_device['values'] = devices_compute_uints['devices']
     combo_device.current(0)
+
+    combo_compute_unit['values'] = devices_compute_uints['compute_units'][0]
+    if len(combo_compute_unit['values']) > 0:
+        combo_compute_unit.current(0)
+
     combo_plot_metric.current(0)
     combo_plot_auto_refresh.current(1)
     root_window.mainloop()

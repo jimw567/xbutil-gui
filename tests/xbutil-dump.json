@@ -1,7 +1,7 @@
 {
     "schema_version": {
         "schema": "JSON",
-        "creation_date": "Wed Jan  6 13:47:33 2021 GMT"
+        "creation_date": "Thu Jan 21 06:24:46 2021 GMT"
     },
     "system": {
         "host": {
@@ -11,9 +11,9 @@
                 "version": "#229-Ubuntu SMP Wed Nov 25 11:05:42 UTC 2020",
                 "machine": "x86_64",
                 "distribution": "Ubuntu 16.04.5 LTS",
-                "model": "Super Server",
-                "cores": "16",
-                "memory_bytes": "0x3d233c000",
+                "model": "PowerEdge R940xa",
+                "cores": "24",
+                "memory_bytes": "0xb70dac000",
                 "libraries": [
                     {
                         "name": "glibc",
@@ -41,9 +41,15 @@
             },
             "devices": [
                 {
-                    "bdf": "0000:b3:00.1",
+                    "bdf": "0000:89:00.1",
                     "vbnv": "xilinx_u50_gen3x16_xdma_201920_3",
                     "id": "0xf465b0a3ae8c64f619bc150384ace69b",
+                    "is_ready": "true"
+                },
+                {
+                    "bdf": "0000:5e:00.1",
+                    "vbnv": "xilinx_u30_gen3x4_base_1",
+                    "id": "0x79407d0e30ab49478178d6e18f14d619",
                     "is_ready": "true"
                 }
             ]
@@ -51,7 +57,7 @@
     },
     "devices": [
         {
-            "device_id": "0000:b3:00.1",
+            "device_id": "0000:89:00.1",
             "aie_metadata": {
                 "description": "Aie_Metadata",
                 "error_msg": "No such query request (124)"
@@ -64,26 +70,738 @@
                         "metrics": [
                             {
                                 "channel_id": "0",
-                                "host_to_card_bytes": "0x0",
-                                "card_to_host_bytes": "0x0"
+                                "host_to_card_bytes": "0x2de7a7cc",
+                                "card_to_host_bytes": "0x1369fd4"
                             },
                             {
                                 "channel_id": "1",
-                                "host_to_card_bytes": "0x0",
-                                "card_to_host_bytes": "0x0"
+                                "host_to_card_bytes": "0x2d801df8",
+                                "card_to_host_bytes": "0x60"
+                            }
+                        ]
+                    },
+                    "memory": {
+                        "data_streams": "",
+                        "memories": [
+                            {
+                                "type": "MEM_HBM",
+                                "tag": "HBM[0]",
+                                "enabled": "true",
+                                "base_address": "0x0",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[1]",
+                                "enabled": "true",
+                                "base_address": "0x0",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[2]",
+                                "enabled": "true",
+                                "base_address": "0x20000000",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[3]",
+                                "enabled": "true",
+                                "base_address": "0x20000000",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[4]",
+                                "enabled": "true",
+                                "base_address": "0x40000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[5]",
+                                "enabled": "false",
+                                "base_address": "0x50000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[6]",
+                                "enabled": "true",
+                                "base_address": "0x60000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[7]",
+                                "enabled": "false",
+                                "base_address": "0x70000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[8]",
+                                "enabled": "true",
+                                "base_address": "0x80000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[9]",
+                                "enabled": "false",
+                                "base_address": "0x90000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[10]",
+                                "enabled": "true",
+                                "base_address": "0xa0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[11]",
+                                "enabled": "false",
+                                "base_address": "0xb0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[12]",
+                                "enabled": "true",
+                                "base_address": "0xc0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[13]",
+                                "enabled": "false",
+                                "base_address": "0xd0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[14]",
+                                "enabled": "true",
+                                "base_address": "0xe0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[15]",
+                                "enabled": "false",
+                                "base_address": "0xf0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[16]",
+                                "enabled": "true",
+                                "base_address": "0x100000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[17]",
+                                "enabled": "false",
+                                "base_address": "0x110000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[18]",
+                                "enabled": "true",
+                                "base_address": "0x120000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[19]",
+                                "enabled": "false",
+                                "base_address": "0x130000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[20]",
+                                "enabled": "true",
+                                "base_address": "0x140000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[21]",
+                                "enabled": "false",
+                                "base_address": "0x150000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[22]",
+                                "enabled": "true",
+                                "base_address": "0x160000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[23]",
+                                "enabled": "false",
+                                "base_address": "0x170000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[24]",
+                                "enabled": "true",
+                                "base_address": "0x180000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[25]",
+                                "enabled": "false",
+                                "base_address": "0x190000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[26]",
+                                "enabled": "true",
+                                "base_address": "0x1a0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[27]",
+                                "enabled": "false",
+                                "base_address": "0x1b0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[28]",
+                                "enabled": "false",
+                                "base_address": "0x1c0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[29]",
+                                "enabled": "false",
+                                "base_address": "0x1d0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[30]",
+                                "enabled": "false",
+                                "base_address": "0x1e0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[31]",
+                                "enabled": "false",
+                                "base_address": "0x1f0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "temperature_C": "39",
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "PLRAM[0]",
+                                "enabled": "false",
+                                "base_address": "0x0",
+                                "range_bytes": "0x0",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "PLRAM[1]",
+                                "enabled": "false",
+                                "base_address": "0x0",
+                                "range_bytes": "0x0",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "PLRAM[2]",
+                                "enabled": "false",
+                                "base_address": "0x0",
+                                "range_bytes": "0x0",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "PLRAM[3]",
+                                "enabled": "false",
+                                "base_address": "0x0",
+                                "range_bytes": "0x0",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            }
+                        ],
+                        "memory_groups": [
+                            {
+                                "type": "MEM_HBM",
+                                "tag": "HBM[0]",
+                                "base_address": "0x0",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[1]",
+                                "base_address": "0x0",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[2]",
+                                "base_address": "0x20000000",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[3]",
+                                "base_address": "0x20000000",
+                                "range_bytes": "0x20000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[4]",
+                                "base_address": "0x40000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[6]",
+                                "base_address": "0x60000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[8]",
+                                "base_address": "0x80000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[10]",
+                                "base_address": "0xa0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[12]",
+                                "base_address": "0xc0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[14]",
+                                "base_address": "0xe0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[16]",
+                                "base_address": "0x100000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[18]",
+                                "base_address": "0x120000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[20]",
+                                "base_address": "0x140000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[22]",
+                                "base_address": "0x160000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[24]",
+                                "base_address": "0x180000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "MEM_DRAM",
+                                "tag": "HBM[26]",
+                                "base_address": "0x1a0000000",
+                                "range_bytes": "0x10000000",
+                                "extended_info": {
+                                    "usage": {
+                                        "allocated_bytes": "0",
+                                        "buffer_objects_count": "0"
+                                    }
+                                }
                             }
                         ]
                     }
-                }
+                },
+                "error_msg": "Failed to find subdirectory for HBM[26] under \/sys\/bus\/pci\/devices\/0000:89:00.1\n"
             },
-            "compute_units": "",
+            "compute_units": [
+                {
+                    "name": "kernel_louvain:kernel_louvain",
+                    "base_address": "0x1400000",
+                    "usage": "3",
+                    "status": {
+                        "bit_mask": "0x4",
+                        "bits_set": [
+                            "IDLE"
+                        ]
+                    }
+                }
+            ],
             "debug_ip_status": {
                 "description": "Status of Debug IPs present in xclbin loaded on device",
                 "info": "Failed to find any Debug IP Layout section in the bitstream loaded on device. Ensure that a valid bitstream with debug IPs (AIM, LAPC) is successfully downloaded."
             },
             "asynchronous_errors": "",
             "electrical": {
-                "power_consumption_watts": "14.476180",
+                "power_consumption_watts": "20.194020",
                 "power_rails": [
                     {
                         "id": "12v_aux",
@@ -101,11 +819,11 @@
                         "id": "12v_pex",
                         "description": "12 Volts PCI Express",
                         "voltage": {
-                            "volts": "12.020",
+                            "volts": "12.180",
                             "is_present": "true"
                         },
                         "current": {
-                            "amps": "1.190",
+                            "amps": "1.505",
                             "is_present": "true"
                         }
                     },
@@ -113,11 +831,11 @@
                         "id": "3v3_pex",
                         "description": "3.3 Volts PCI Express",
                         "voltage": {
-                            "volts": "3.315",
+                            "volts": "3.327",
                             "is_present": "true"
                         },
                         "current": {
-                            "amps": "0.052",
+                            "amps": "0.560",
                             "is_present": "true"
                         }
                     },
@@ -141,7 +859,7 @@
                             "is_present": "true"
                         },
                         "current": {
-                            "amps": "6.800",
+                            "amps": "8.300",
                             "is_present": "true"
                         }
                     },
@@ -149,11 +867,11 @@
                         "id": "vccint_io",
                         "description": "Internal FPGA Vcc IO",
                         "voltage": {
-                            "volts": "0.851",
+                            "volts": "0.852",
                             "is_present": "true"
                         },
                         "current": {
-                            "amps": "0.500",
+                            "amps": "3.700",
                             "is_present": "true"
                         }
                     },
@@ -185,7 +903,7 @@
                         "id": "5v5_system",
                         "description": "5.5 Volts System",
                         "voltage": {
-                            "volts": "5.013",
+                            "volts": "4.977",
                             "is_present": "true"
                         },
                         "current": {
@@ -221,7 +939,7 @@
                         "id": "0v9_vcc",
                         "description": "0.9 Volts Vcc",
                         "voltage": {
-                            "volts": "0.902",
+                            "volts": "0.903",
                             "is_present": "true"
                         },
                         "current": {
@@ -245,7 +963,7 @@
                         "id": "mgt_vtt",
                         "description": "Mgt Vtt",
                         "voltage": {
-                            "volts": "1.206",
+                            "volts": "1.210",
                             "is_present": "true"
                         },
                         "current": {
@@ -257,7 +975,7 @@
                         "id": "3v3_vcc",
                         "description": "3.3 Volts Vcc",
                         "voltage": {
-                            "volts": "3.262",
+                            "volts": "3.255",
                             "is_present": "true"
                         },
                         "current": {
@@ -269,7 +987,7 @@
                         "id": "hbm_1v2",
                         "description": "1.2 Volts HBM",
                         "voltage": {
-                            "volts": "1.202",
+                            "volts": "1.199",
                             "is_present": "true"
                         },
                         "current": {
@@ -281,7 +999,7 @@
                         "id": "vpp2v5",
                         "description": "Vpp 2.5 Volts",
                         "voltage": {
-                            "volts": "2.506",
+                            "volts": "2.505",
                             "is_present": "true"
                         },
                         "current": {
@@ -392,7 +1110,7 @@
                     {
                         "location_id": "fpga_fan_1",
                         "description": "FPGA Fan 1",
-                        "critical_trigger_temp_C": "57",
+                        "critical_trigger_temp_C": "28",
                         "speed_rpm": "0",
                         "is_present": "false"
                     }
@@ -400,21 +1118,21 @@
             },
             "firewall": {
                 "Description": "Firewall Information",
-                "firewall_level": "3",
-                "firewall_status": "0x3",
-                "status": "(READ_RESPONSE_BUSY|RECS_ARREADY_MAX_WAIT)"
+                "firewall_level": "0",
+                "firewall_status": "0x0",
+                "status": "(GOOD)"
             },
             "thermals": [
                 {
                     "location_id": "pcb_top_front",
                     "description": "PCB Top Front",
-                    "temp_C": "58",
+                    "temp_C": "29",
                     "is_present": "true"
                 },
                 {
                     "location_id": "pcb_top_rear",
                     "description": "PCB Top Rear",
-                    "temp_C": "54",
+                    "temp_C": "30",
                     "is_present": "true"
                 },
                 {
@@ -450,14 +1168,431 @@
                 {
                     "location_id": "fpga0",
                     "description": "FPGA",
-                    "temp_C": "64",
+                    "temp_C": "44",
                     "is_present": "true"
                 },
                 {
                     "location_id": "int_vcc",
                     "description": "Int Vcc",
-                    "temp_C": "63",
+                    "temp_C": "41",
                     "is_present": "true"
+                },
+                {
+                    "location_id": "fpga_hbm",
+                    "description": "FPGA HBM",
+                    "temp_C": "39",
+                    "is_present": "true"
+                }
+            ]
+        },
+        {
+            "device_id": "0000:5e:00.1",
+            "aie_metadata": {
+                "description": "Aie_Metadata",
+                "error_msg": "No such query request (124)"
+            },
+            "mem_topology": {
+                "description": "Memory Information",
+                "board": {
+                    "direct_memory_accesses": {
+                        "type": "pcie xdma",
+                        "metrics": [
+                            {
+                                "channel_id": "0",
+                                "host_to_card_bytes": "0x0",
+                                "card_to_host_bytes": "0x0"
+                            },
+                            {
+                                "channel_id": "1",
+                                "host_to_card_bytes": "0x0",
+                                "card_to_host_bytes": "0x0"
+                            }
+                        ]
+                    }
+                }
+            },
+            "compute_units": "",
+            "debug_ip_status": {
+                "description": "Status of Debug IPs present in xclbin loaded on device",
+                "info": "Failed to find any Debug IP Layout section in the bitstream loaded on device. Ensure that a valid bitstream with debug IPs (AIM, LAPC) is successfully downloaded."
+            },
+            "asynchronous_errors": "",
+            "electrical": {
+                "power_consumption_watts": "0.000000",
+                "power_rails": [
+                    {
+                        "id": "12v_aux",
+                        "description": "12 Volts Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_pex",
+                        "description": "12 Volts PCI Express",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "3v3_pex",
+                        "description": "3.3 Volts PCI Express",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "3v3_aux",
+                        "description": "3.3 Volts Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vccint",
+                        "description": "Internal FPGA Vcc",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vccint_io",
+                        "description": "Internal FPGA Vcc IO",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "ddr_vpp_btm",
+                        "description": "DDR Vpp Bottom",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "ddr_vpp_top",
+                        "description": "DDR Vpp Top",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "5v5_system",
+                        "description": "5.5 Volts System",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "1v2_top",
+                        "description": "Vcc 1.2 Volts Top",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_1v2_btm",
+                        "description": "Vcc 1.2 Volts Bottom",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "0v9_vcc",
+                        "description": "0.9 Volts Vcc",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_sw",
+                        "description": "12 Volts SW",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "mgt_vtt",
+                        "description": "Mgt Vtt",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "3v3_vcc",
+                        "description": "3.3 Volts Vcc",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "hbm_1v2",
+                        "description": "1.2 Volts HBM",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vpp2v5",
+                        "description": "Vpp 2.5 Volts",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "12v_aux1",
+                        "description": "12 Volts Aux1",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc1v2_i",
+                        "description": "Vcc 1.2 Volts i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_i",
+                        "description": "V12 in i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_aux0_i",
+                        "description": "V12 in Aux0 i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "v12_in_aux1_i",
+                        "description": "V12 in Aux1 i",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_aux",
+                        "description": "Vcc Auxillary",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_aux_pmc",
+                        "description": "Vcc Auxillary Pmc",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    },
+                    {
+                        "id": "vcc_ram",
+                        "description": "Vcc Ram",
+                        "voltage": {
+                            "volts": "0.000",
+                            "is_present": "false"
+                        },
+                        "current": {
+                            "amps": "0.000",
+                            "is_present": "false"
+                        }
+                    }
+                ]
+            },
+            "mechanical": {
+                "fans": [
+                    {
+                        "location_id": "fpga_fan_1",
+                        "description": "FPGA Fan 1",
+                        "critical_trigger_temp_C": "0",
+                        "speed_rpm": "0",
+                        "is_present": "false"
+                    }
+                ]
+            },
+            "firewall": {
+                "Description": "Firewall Information",
+                "firewall_level": "0",
+                "firewall_status": "0x0",
+                "status": "(GOOD)"
+            },
+            "thermals": [
+                {
+                    "location_id": "pcb_top_front",
+                    "description": "PCB Top Front",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "pcb_top_rear",
+                    "description": "PCB Top Rear",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "pcb_bottom_front",
+                    "description": "PCB Bottom Front",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_0",
+                    "description": "Cage0",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_1",
+                    "description": "Cage1",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_2",
+                    "description": "Cage2",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "cage_temp_3",
+                    "description": "Cage3",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "fpga0",
+                    "description": "FPGA",
+                    "temp_C": "0",
+                    "is_present": "false"
+                },
+                {
+                    "location_id": "int_vcc",
+                    "description": "Int Vcc",
+                    "temp_C": "0",
+                    "is_present": "false"
                 },
                 {
                     "location_id": "fpga_hbm",
