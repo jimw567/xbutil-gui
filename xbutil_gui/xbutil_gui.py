@@ -189,7 +189,8 @@ def get_devices_compute_uints(xbutil_dump_json):
     return devices_compute_units
 
 
-def xbutil_gui_main():
+
+def main():
     global plot_metric
 
     parser = argparse.ArgumentParser()
@@ -227,8 +228,7 @@ def xbutil_gui_main():
 
 
 if __name__ == '__main__':
-    # start the main GUI
-    xbutil_gui_main()
+    main()
 
 
 
