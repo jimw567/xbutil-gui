@@ -16,10 +16,10 @@ python3 -m venv venv
 ```
 
 ## Install required Python packages
-```pip install -r requirements.txt```
+`pip install -r requirements.txt`
 
 ## Install xbutil
-```python setup.py develop
+`python setup.py develop`
 
 ## Run xbutil-gui
-```xbutil_gui```
+`xbutil_gui`
