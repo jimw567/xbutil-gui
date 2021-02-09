@@ -14,8 +14,14 @@ import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import argparse
 import atexit
+from pathlib import Path
+import json
+
 
 # global variables
+__resource_path__ = Path(__file__).parent / 'resources'
+__icon__ = __resource_path__ / 'xbutil-icon.png'
+
 status_codes = {
     'XRT_NOT_SETUP': {
         'code': 1,
@@ -26,7 +32,7 @@ status_codes = {
 # root window
 root_window = tk.Tk()
 root_window.title('Xilinx xbutil GUI')
-root_window_icon = tk.PhotoImage(file='resources/xbutil-icon.png')
+root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
 root_window.grid_columnconfigure(0, weight=1)
 root_window.grid_columnconfigure(1, weight=1)
