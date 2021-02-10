@@ -5,9 +5,15 @@ A Python Tkinter GUI for Xilinx Vitis xbutil program
 This program requires Python 3.5 or newer to run.
 
 ## Install Python Tkinter
+### Ubuntu
 ```
 sudo apt install python3-tk
 ```
+### Redhat/CentOS 7.x
+```
+sudo yum install python36-tkinter
+```
+
 
 ## Create and activate a Python3 virtual environment
 ```

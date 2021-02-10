@@ -20,7 +20,7 @@ import json
 
 # global variables
 __resource_path__ = Path(__file__).parent / 'resources'
-__icon__ = __resource_path__ / 'xbutil-icon.png'
+__icon__ = __resource_path__ / 'xbutil-icon.gif'
 
 status_codes = {
     'XRT_NOT_SETUP': {
