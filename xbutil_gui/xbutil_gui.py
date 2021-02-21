@@ -29,6 +29,7 @@ status_codes = {
     }
 }
 # interval in seconds between xbutil json dumps
+VERSION = '0.0.2'
 XBUTIL_REFRESH_INTERVAL = 5
 
 # show top info
@@ -80,7 +81,7 @@ def show_top_window():
 
 # root window
 root_window = tk.Tk()
-root_window.title('Xilinx xbutil GUI')
+root_window.title('Xilinx xbutil GUI ' + VERSION)
 root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
 root_window.grid_columnconfigure(0, weight=0)
@@ -102,7 +103,7 @@ button_top.grid(row=cur_grid_row, column=3, sticky='W')
 cur_grid_row = cur_grid_row + 1
 
 # compute unit row
-lable_compute_unit = ttk.Label(root_window, text="Compute Uint").grid(
+lable_compute_unit = ttk.Label(root_window, text="Compute Unit").grid(
     row=cur_grid_row, column=1, sticky='e')
 combo_compute_unit = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_compute_unit['values'] = []
@@ -113,7 +114,7 @@ cur_grid_row = cur_grid_row + 1
 lable_plot_metric = ttk.Label(root_window, text="Plot metric").grid(
     row=cur_grid_row, column=1, sticky='e')
 combo_plot_metric = ttk.Combobox(root_window, width=COMBO_WIDTH)
-combo_plot_metric['values'] = ('power', 'temperature', 'voltage')
+combo_plot_metric['values'] = ('power', 'temperature', 'vccint')
 combo_plot_metric.grid(row=cur_grid_row, column=2, sticky='w')
 cur_grid_row = cur_grid_row + 1
 
@@ -148,6 +149,7 @@ plot_metric = 'power'
 time_hist = []
 power_hist = []
 temp_hist = []
+vccint_hist = []
 auto_refresh_interval = 10 # seconds between refresh
 scheduler = BackgroundScheduler(daemon=True)
 
@@ -173,7 +175,7 @@ def get_xbutil_dump(json_file):
 def update_history(json_file):
     xbutil_dump_json = get_xbutil_dump(json_file)
 
-    devices_compute_units = get_devices_compute_uints(xbutil_dump_json)
+    devices_compute_units = get_devices_compute_units(xbutil_dump_json)
     combo_device_cur_idx = combo_device.current()
     combo_compute_unit['values'] = devices_compute_units['compute_units'][combo_device_cur_idx]
     device_id = devices_compute_units['device_ids'][combo_device_cur_idx]
@@ -184,17 +186,20 @@ def update_history(json_file):
         
     #time_hist.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     fpga_present = False
-    for t in xbutil_dump_json['devices'][0]['thermals']:
+    for t in xbutil_dump_json['devices'][combo_device_cur_idx]['thermals']:
         if t['location_id'] == 'fpga0' and t['is_present']:
             fpga_present = True
             fpga_temp = float(t['temp_C'])
 
     if fpga_present:
         time_hist.append(datetime.datetime.now().strftime("%m/%d %H:%M"))
-        power_hist.append(float(xbutil_dump_json['devices'][0]['electrical']['power_consumption_watts']))
+        power_hist.append(float(xbutil_dump_json['devices'][combo_device_cur_idx]['electrical']['power_consumption_watts']))
         temp_hist.append(fpga_temp)
 
-    
+        for pr in xbutil_dump_json['devices'][combo_device_cur_idx]['electrical']['power_rails']:
+            if pr['id'] == 'vccint':
+                vccint_hist.append(float(pr['voltage']['volts']))
+
     top_dict = {}
     top_dict['device_memory'] = []
     top_dict['dma_metrics'] = []
@@ -238,7 +243,7 @@ def update_history(json_file):
         show_top_info(top_dict)
 
 
-def animate_plot(iter):
+def animate_plot(nth_call):
     global plot_metric, auto_refresh_interval
 
     selected_plot_metric = combo_plot_metric.get()
@@ -251,7 +256,7 @@ def animate_plot(iter):
             return
         auto_refresh_interval = int(combo_plot_auto_refresh.get())
 
-        if iter % auto_refresh_interval > 0:
+        if nth_call % auto_refresh_interval > 0:
             return
 
     plot_metric = selected_plot_metric
@@ -272,9 +277,15 @@ def animate_plot(iter):
         y_hist_df.plot(kind='line', legend=False, x='time', y='temp', ax=plot_hist,
                        color='r', marker='.', fontsize=10)
         plot_hist.set_title('Temperature(C) History')
+    elif plot_metric == 'vccint':
+        y_hist_dict = {'time': time_hist[::auto_refresh_interval], 'vccint': vccint_hist[::auto_refresh_interval]}
+        y_hist_df = DataFrame(y_hist_dict, columns=['time', 'vccint'])
+        y_hist_df.plot(kind='line', legend=False, x='time', y='vccint', ax=plot_hist,
+                       color='r', marker='.', fontsize=10)
+        plot_hist.set_title('VCCINT(V) History')
 
 
-def get_devices_compute_uints(xbutil_dump_json):
+def get_devices_compute_units(xbutil_dump_json):
     devices_compute_units = {}
     device_combo_names = []
     device_ids = []
@@ -304,8 +315,6 @@ def get_devices_compute_uints(xbutil_dump_json):
 
     return devices_compute_units
 
-
-
 def main():
     global plot_metric
 
@@ -330,7 +339,7 @@ def main():
     animation_power = animation.FuncAnimation(figure_hist, animate_plot, interval=1000)
 
     xbutil_dump_json = get_xbutil_dump(args.json_file)
-    devices_compute_units = get_devices_compute_uints(xbutil_dump_json)
+    devices_compute_units = get_devices_compute_units(xbutil_dump_json)
 
     combo_device['values'] = devices_compute_units['device_combo_names']
     combo_device.current(0)

@@ -18,13 +18,14 @@
 # limitations under the License.
 #
 import setuptools
+from xbutil_gui import VERSION
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="xbutil_gui", # Replace with your own username
-    version="0.0.1",
+    name='xbutil_gui', # Replace with your own username
+    version=VERSION,
     entry_points={
         'console_scripts' : [
             'xbutil_gui = xbutil_gui.xbutil_gui:main'
@@ -42,5 +43,5 @@ setuptools.setup(
         "License :: OSI Approved :: Apache License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5',
+    python_requiress='>=3.6.3'
 )
