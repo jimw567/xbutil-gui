@@ -1,0 +1,5 @@
+{
+  "clusters":
+          {"cluster1": ["c1-host1", "c1-host2"],
+           "cluster2": ["c2-host1", "c2-host2"]}
+}
