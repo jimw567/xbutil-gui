@@ -37,11 +37,10 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/jimw567/xbutil-gui",
-    packages=setuptools.find_packages(),
+    packages=['xbutil_gui'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache License",
         "Operating System :: OS Independent",
-    ],
-    python_requiress='>=3.6.3'
+    ]
 )
