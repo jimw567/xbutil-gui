@@ -3,16 +3,12 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, scrolledtext, messagebox
 from tksheet import Sheet
-import matplotlib.animation as animation
-import matplotlib.pyplot as plt
 import subprocess
 import os
 import json
 import shutil
 import datetime
-from apscheduler.schedulers.background import BackgroundScheduler
 import argparse
-import atexit
 from pathlib import Path
 
 from xbutil_gui.xbutil_top import XbutilTop
@@ -61,6 +57,7 @@ def show_plot_window():
         return
 
     xbutil_plot.show_plot_window(root_window, selected_host, selected_device_id_name)
+
 
 ###############################################################################
 # root window
@@ -241,11 +238,13 @@ def main():
 
     home = os.path.expanduser("~")
     config_file = home + '/.xbutil-gui.json'
+    print(config_file)
     cluster_names = []
     if Path(config_file).exists():
         with open(config_file, 'r') as fp:
             xbutil_config_json = json.load(fp)
 
+        print(xbutil_config_json)
         clusters = xbutil_config_json.get('clusters', [])
         for k in clusters.keys():
             cluster_names.append(k)
@@ -261,12 +260,6 @@ def main():
             prev_cluster_name = cluster_names[0]
             auto_refresh_host_idx = 0
             auto_refresh_sheet_row = 1
-
-    # add a background task to get xbutil
-    #scheduler.add_job(refresh_database, 'interval', [args.json_file],
-    #                  seconds=DEFAULT_XBUTIL_REFRESH_INTERVAL)
-    #scheduler.start()
-    #atexit.register(lambda: scheduler.shutdown(wait=True))
 
     root_window.after(DEFAULT_XBUTIL_REFRESH_INTERVAL*1000, refresh_database, args.json_file)
     root_window.mainloop()

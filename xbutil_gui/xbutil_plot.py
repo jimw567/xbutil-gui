@@ -23,6 +23,8 @@ class XbutilPlot:
         self.combo_plot_auto_refresh = None
         self.figure_hist = None
         self.plot_hist = None
+        self.plot_hist_twinx = None
+        self.y_ax = None
         self.canvas_hist = None
         self.frame_toolbar = None
         self.toolbar_plot = None
@@ -31,11 +33,12 @@ class XbutilPlot:
         # {'host1-device-key1': {metric history},
         #  'host1-device-key2': {metric history},
         #  'host2-device-key1': {metric history}...}
-        self.plot_metric = 'power'
+        self.plot_metric = 'power/temperature'
         self.time_hist = {}
         self.power_hist = {}
         self.temp_hist = {}
         self.vccint_hist = {}
+        self.iccint_hist = {}
 
     def plot_metrics(self, auto_refresh_seconds):
         if not (self.window_plot is not None and tk.Toplevel.winfo_exists(self.window_plot)):
@@ -59,29 +62,36 @@ class XbutilPlot:
             return
 
         self.plot_hist.clear()
-        if self.plot_metric == 'power':
+        if self.plot_hist_twinx is not None:
+            self.plot_hist_twinx.clear()
+
+        if self.plot_metric == 'power/temperature':
             y_hist_dict = {'time': self.time_hist[host_device_key][::index_step],
-                           'power': self.power_hist[host_device_key][::index_step]}
-            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'power'])
-            y_hist_df.plot(kind='line', legend=False, x='time', y='power', ax=self.plot_hist,
-                           color='r', marker='.', fontsize=10)
-            self.plot_hist.set_title('Power(w) History')
-            self.canvas_hist.draw()
-        elif self.plot_metric == 'temperature':
-            y_hist_dict = {'time': self.time_hist[host_device_key][::index_step],
+                           'power': self.power_hist[host_device_key][::index_step],
                            'temp': self.temp_hist[host_device_key][::index_step]}
-            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'temp'])
-            y_hist_df.plot(kind='line', legend=False, x='time', y='temp', ax=self.plot_hist,
-                           color='r', marker='.', fontsize=10)
-            self.plot_hist.set_title('Temperature(C) History')
+            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'power', 'temp'])
+            y_hist_df.plot(kind='line', legend=True, x='time', y='power',
+                           ax=self.plot_hist, color='r', marker='.', fontsize=10)
+            self.plot_hist_twinx = y_hist_df['temp'].plot(
+                kind='line', legend=True, ax=self.plot_hist,
+                color='b', marker='.', fontsize=10, secondary_y=True)
+            self.plot_hist.set_ylabel('Power(W)')
+            self.plot_hist.right_ax.set_ylabel('Temperature (C)')
+            self.plot_hist.set_title('Power(w)/Temperature(C) History')
             self.canvas_hist.draw()
-        elif self.plot_metric == 'vccint':
+        elif self.plot_metric == 'vccint/iccint':
             y_hist_dict = {'time': self.time_hist[host_device_key][::index_step],
-                           'vccint': self.vccint_hist[host_device_key][::index_step]}
-            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'vccint'])
-            y_hist_df.plot(kind='line', legend=False, x='time', y='vccint', ax=self.plot_hist,
+                           'vccint': self.vccint_hist[host_device_key][::index_step],
+                           'iccint': self.iccint_hist[host_device_key][::index_step]}
+            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'vccint', 'iccint'])
+            y_hist_df.plot(kind='line', legend=True, x='time', y='vccint', ax=self.plot_hist,
                            color='r', marker='.', fontsize=10)
-            self.plot_hist.set_title('VCCINT(V) History')
+            self.plot_hist_twinx = y_hist_df['iccint'].plot(
+                kind='line', legend=True, ax=self.plot_hist,
+                color='b', marker='.', fontsize=10, secondary_y=True)
+            self.plot_hist.set_ylabel('Vccint(V)')
+            self.plot_hist.right_ax.set_ylabel('Iccint(A)')
+            self.plot_hist.set_title('Vccint(V)/Iccint(A) History')
             self.canvas_hist.draw()
 
     def show_plot_window(self, root_window, selected_host, selected_device_id_name):
@@ -112,7 +122,7 @@ class XbutilPlot:
         lable_plot_metric = ttk.Label(self.window_plot, text="Plot metric").grid(
             row=cur_grid_row, column=0, sticky='e')
         self.combo_plot_metric = ttk.Combobox(self.window_plot, width=COMBO_WIDTH)
-        self.combo_plot_metric['values'] = ('power', 'temperature', 'vccint')
+        self.combo_plot_metric['values'] = ('power/temperature', 'vccint/iccint')
         self.combo_plot_metric.grid(row=cur_grid_row, column=1, sticky='w')
         cur_grid_row = cur_grid_row + 1
         self.combo_plot_metric.current(0)
@@ -147,6 +157,7 @@ class XbutilPlot:
             self.power_hist[host_device_key] = []
             self.temp_hist[host_device_key] = []
             self.vccint_hist[host_device_key] = []
+            self.iccint_hist[host_device_key] = []
 
         fpga_present = False
         for dev in xbutil_dump_json['devices']:
@@ -172,4 +183,4 @@ class XbutilPlot:
             for pr in dev['electrical']['power_rails']:
                 if pr['id'] == 'vccint':
                     self.vccint_hist[host_device_key].append(float(pr['voltage']['volts']))
-
+                    self.iccint_hist[host_device_key].append(float(pr['current']['amps']))
