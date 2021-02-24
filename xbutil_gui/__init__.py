@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
+import sys
+
+# Make sure it's running in Python 3.6 as it's required by tksheet.
+if sys.version_info[0] < 2 or (sys.version_info[0] == 3 and sys.version_info[1] < 6):
+    sys.exit('ERROR: This program require Python 3.6 or newer. You are running %s' %
+             '.'.join(map(str, sys.version_info[0:3])))
 
 VERSION = '0.0.3'
 LABEL_WIDTH = 15

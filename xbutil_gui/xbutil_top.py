@@ -114,5 +114,12 @@ class XbutilTop:
             # create a new Toplevel
             self.window_top = Toplevel(root_window)
             self.window_top.title('xbutil GUI ' + VERSION + ' - top')
-            self.text_top = scrolledtext.ScrolledText(self.window_top, width=100, height=40)
-            self.text_top.pack()
+            self.window_top.geometry('600x800+200+200')
+
+            cur_grid_row = 0
+
+            self.text_top = scrolledtext.ScrolledText(self.window_top)
+            #self.text_top.pack()
+            self.text_top.grid(row=cur_grid_row, column=0, sticky='nsew')
+            self.window_top.rowconfigure(cur_grid_row, weight=1)
+            self.window_top.columnconfigure(0, weight=1)

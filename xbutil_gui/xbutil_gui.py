@@ -13,8 +13,10 @@ from pathlib import Path
 
 from xbutil_gui.xbutil_top import XbutilTop
 from xbutil_gui.xbutil_plot import XbutilPlot
-from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, __icon__, STATUS_CODES, \
-                DEFAULT_XBUTIL_REFRESH_INTERVAL
+from xbutil_gui.xbutil_handler import get_devices_compute_units, \
+                                      get_xbutil_dump
+from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
+                DEFAULT_XBUTIL_REFRESH_INTERVAL, __resource_path__, __icon__
 
 
 # interval in seconds between xbutil json dumps
@@ -63,7 +65,7 @@ def show_plot_window():
 # root window
 ###############################################################################
 root_window = tk.Tk()
-root_window.geometry('1200x400')
+root_window.geometry('1200x400+20+20')
 root_window.title('Xilinx xbutil GUI ' + VERSION)
 root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
@@ -128,97 +130,52 @@ button_plot.grid(row=cur_grid_row, column=2)
 cur_grid_row = cur_grid_row + 1
 
 
-def get_xbutil_dump(json_file, host='localhost'):
-    if json_file is None:
-        command = ['/opt/xilinx/xrt/bin/unwrapped/xbutil2', 'examine', 
-                   '--format', 'JSON', '--report', 'all']
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        xbutil_dump = p.stdout.read()
-        try:
-            xbutil_dump_json = json.loads(xbutil_dump.decode('utf-8'))
-        except json.decoder.JSONDecodeError:
-            print('ERROR: cannot decode json', xbutil_dump)
-            xbutil_dump_json = None
-    else:
-        with open(json_file, 'r') as fp:
-            xbutil_dump_json = json.load(fp)
-
-    return xbutil_dump_json
-
-
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
 def refresh_database(json_file):
-    global auto_refresh_host_idx, clusters, auto_refresh_sheet_row, auto_refresh_plot_seconds
+    global auto_refresh_host_idx, clusters, auto_refresh_sheet_row, \
+           auto_refresh_plot_seconds
 
-    xbutil_dump_json = get_xbutil_dump(json_file)
-    if xbutil_dump_json is None:
-        return
-
-    devices_compute_units = get_devices_compute_units(xbutil_dump_json)
     selected_cluster = combo_cluster.current()
     refresh_host = clusters[combo_cluster['values'][selected_cluster]][auto_refresh_host_idx]
-    auto_refresh_host_idx = auto_refresh_host_idx + 1
 
-    last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    for i_dn in range(len(devices_compute_units['device_id_names'])):
-        device_id_name = devices_compute_units['device_id_names'][i_dn]
-        xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
-        xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
-        if len(devices_compute_units['compute_units'][i_dn]) > 0:
-            for cu in devices_compute_units['compute_units'][i_dn]:
+    xbutil_dump_json = get_xbutil_dump(json_file, host=refresh_host)
+
+    if xbutil_dump_json is not None:
+        devices_compute_units = get_devices_compute_units(xbutil_dump_json)
+
+        last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+        for i_dn in range(len(devices_compute_units['device_id_names'])):
+            device_id_name = devices_compute_units['device_id_names'][i_dn]
+            xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
+            xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
+            if len(devices_compute_units['compute_units'][i_dn]) > 0:
+                for cu in devices_compute_units['compute_units'][i_dn]:
+                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, 0, refresh_host)
+                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, 1, device_id_name)
+                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, 2, cu)
+                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, 3, last_udpated)
+                    auto_refresh_sheet_row = auto_refresh_sheet_row + 1
+            else:
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, 0, refresh_host)
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, 1, device_id_name)
-                sheet_cluster.set_cell_data(auto_refresh_sheet_row, 2, cu)
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, 2, 'None')
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, 3, last_udpated)
                 auto_refresh_sheet_row = auto_refresh_sheet_row + 1
-        else:
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, 0, refresh_host)
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, 1, device_id_name)
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, 2, 'None')
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, 3, last_udpated)
-            auto_refresh_sheet_row = auto_refresh_sheet_row + 1
 
-    sheet_cluster.refresh()
+        sheet_cluster.refresh()
+
+        xbutil_top.show_top_info()
+        xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
+
+    auto_refresh_host_idx = auto_refresh_host_idx + 1
     if auto_refresh_host_idx == len(clusters[combo_cluster['values'][selected_cluster]]):
         auto_refresh_host_idx = 0
         auto_refresh_sheet_row = 1
 
-    xbutil_top.show_top_info()
-    xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
-
+    # add refresh_database back to the eventloop
     auto_refresh_plot_seconds = auto_refresh_plot_seconds + DEFAULT_XBUTIL_REFRESH_INTERVAL
     root_window.after(DEFAULT_XBUTIL_REFRESH_INTERVAL*1000, refresh_database, json_file)
 
-
-def get_devices_compute_units(xbutil_dump_json):
-    devices_compute_units = {}
-    device_id_names = []
-    device_ids = []
-    compute_units = []
-    
-    if xbutil_dump_json is None:
-        return []
-
-    devices_vbnvs = {}
-    for d in xbutil_dump_json['system']['host']['devices']:
-        devices_vbnvs[d['bdf']] = d['vbnv']
-
-    for d in xbutil_dump_json['devices']:
-        device_id = d['device_id']
-        device_vbnv = devices_vbnvs[device_id]
-        device_ids.append(device_id)
-        device_id_names.append(device_id + '::' + device_vbnv)
-        cur_cu = []
-        if isinstance(d['compute_units'], list):
-            for cu in d['compute_units']:
-                cur_cu.append(cu['name'])
-        compute_units.append(cur_cu)
-
-    devices_compute_units['device_ids'] = device_ids
-    devices_compute_units['device_id_names'] = device_id_names
-    devices_compute_units['compute_units'] = compute_units
-
-    return devices_compute_units
 
 
 def main():
@@ -237,29 +194,32 @@ def main():
         exit(STATUS_CODES['XRT_NOT_SETUP']['code'])
 
     home = os.path.expanduser("~")
-    config_file = home + '/.xbutil-gui.json'
-    print(config_file)
+    user_config_file = home + '/xbutil-gui-config.json'
+    default_config_file = __resource_path__ / 'xbutil-gui-config.json'
     cluster_names = []
-    if Path(config_file).exists():
-        with open(config_file, 'r') as fp:
-            xbutil_config_json = json.load(fp)
+    if Path(user_config_file).exists():
+        config_file = Path(user_config_file)
+    elif default_config_file.exists():
+        config_file = default_config_file
 
-        print(xbutil_config_json)
-        clusters = xbutil_config_json.get('clusters', [])
-        for k in clusters.keys():
-            cluster_names.append(k)
+    with open(config_file, 'r') as fp:
+        xbutil_config_json = json.load(fp)
 
-        combo_cluster['values'] = cluster_names
-        if len(cluster_names) > 0:
-            combo_cluster.current(0)
-            # populate the cluster spreadsheet
-            row = 1
-            for host in clusters[cluster_names[0]]:
-                sheet_cluster.set_cell_data(row, 0, host)
-                row = row + 1
-            prev_cluster_name = cluster_names[0]
-            auto_refresh_host_idx = 0
-            auto_refresh_sheet_row = 1
+    clusters = xbutil_config_json.get('clusters', [])
+    for k in clusters.keys():
+        cluster_names.append(k)
+
+    combo_cluster['values'] = cluster_names
+    if len(cluster_names) > 0:
+        combo_cluster.current(0)
+        # populate the cluster spreadsheet
+        row = 1
+        for host in clusters[cluster_names[0]]:
+            sheet_cluster.set_cell_data(row, 0, host)
+            row = row + 1
+        prev_cluster_name = cluster_names[0]
+        auto_refresh_host_idx = 0
+        auto_refresh_sheet_row = 1
 
     root_window.after(DEFAULT_XBUTIL_REFRESH_INTERVAL*1000, refresh_database, args.json_file)
     root_window.mainloop()

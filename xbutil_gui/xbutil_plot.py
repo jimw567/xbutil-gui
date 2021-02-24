@@ -18,6 +18,8 @@ class XbutilPlot:
         self.selected_device_id = None
 
         # members for GUI
+        self.label_host_name = None
+        self.label_device_id_name = None
         self.window_plot = None
         self.combo_plot_metric = None
         self.combo_plot_auto_refresh = None
@@ -100,22 +102,25 @@ class XbutilPlot:
         self.selected_device_id = selected_device_id_name.split('::')[0]
 
         if self.window_plot is not None and tk.Toplevel.winfo_exists(self.window_plot):
+            self.label_host_name['text'] = selected_host
+            #self.label_host_name['text'] = 'host1'  # for documentation purpose
+            self.label_device_id_name['text'] = selected_device_id_name
             return
 
         self.window_plot = Toplevel(root_window)
-        self.window_plot.title('xbutil GUI ' + VERSION + '- plot')
+        self.window_plot.title('xbutil GUI ' + VERSION + ' - plot')
 
         cur_grid_row = 0
         label_host = ttk.Label(self.window_plot, text="Host", width=LABEL_WIDTH, anchor='e')
         label_host.grid(row=cur_grid_row, column=0, sticky='e')
-        label_host_name = ttk.Label(self.window_plot, text=selected_host, width=40, anchor='w')
-        label_host_name.grid(row=cur_grid_row, column=1, sticky='w')
+        self.label_host_name = ttk.Label(self.window_plot, text=selected_host, width=40, anchor='w')
+        self.label_host_name.grid(row=cur_grid_row, column=1, sticky='w')
         cur_grid_row = cur_grid_row + 1
 
         label_device = ttk.Label(self.window_plot, text="Device", width=LABEL_WIDTH, anchor='e')
         label_device.grid(row=cur_grid_row, column=0, sticky='e')
-        label_device_id_name = ttk.Label(self.window_plot, text=selected_device_id_name, width=40, anchor='w')
-        label_device_id_name.grid(row=cur_grid_row, column=1, sticky='w')
+        self.label_device_id_name = ttk.Label(self.window_plot, text=selected_device_id_name, width=40, anchor='w')
+        self.label_device_id_name.grid(row=cur_grid_row, column=1, sticky='w')
         cur_grid_row = cur_grid_row + 1
 
         # Add a dropdown list for plot metric

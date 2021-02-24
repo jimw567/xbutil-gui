@@ -2,7 +2,14 @@
 A Python Tkinter GUI for Xilinx Vitis xbutil program
 
 # Instructions
-This program requires Python 3.5 or newer to run.
+This program requires Python 3.6 or newer to run. You can run the commands 
+below to install Python 3.6 on Ubuntu 16.04:
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.6 python3.6-venv python3.6-tk 
+```
+
 
 ## Install Python Tkinter
 ### Ubuntu
@@ -17,7 +24,7 @@ sudo yum install python36-tkinter
 
 ## Create and activate a Python3 virtual environment
 ```
-python3 -m venv venv
+python3.6 -m venv venv
 . venv/bin/activate
 ```
 
