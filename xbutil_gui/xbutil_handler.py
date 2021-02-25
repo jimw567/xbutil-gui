@@ -2,6 +2,7 @@
 
 import subprocess
 import json
+from xbutil_gui import CU_STATUS_DICT
 
 
 def get_xbutil_dump(json_file, host='localhost'):
@@ -50,7 +51,8 @@ def get_devices_compute_units(xbutil_dump_json):
         cur_cu = []
         if isinstance(d['compute_units'], list):
             for cu in d['compute_units']:
-                cur_cu.append(cu['name'])
+                cur_cu.append({'name': cu['name'],
+                               'status': CU_STATUS_DICT.get(cu['status']['bit_mask'], '--')})
         compute_units.append(cur_cu)
 
     devices_compute_units['device_ids'] = device_ids

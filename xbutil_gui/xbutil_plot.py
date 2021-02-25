@@ -156,7 +156,7 @@ class XbutilPlot:
 
     def update_history(self, xbutil_dump_json, host, device_id_name):
         host_device_key = host + device_id_name
-
+        device_id = device_id_name.split('::')[0]
         if self.time_hist.get(host_device_key) is None:
             self.time_hist[host_device_key] = []
             self.power_hist[host_device_key] = []
@@ -166,7 +166,7 @@ class XbutilPlot:
 
         fpga_present = False
         for dev in xbutil_dump_json['devices']:
-            if dev['device_id'] != self.selected_device_id:
+            if dev['device_id'] != device_id:
                 continue
 
             for t in dev['thermals']:
@@ -181,7 +181,7 @@ class XbutilPlot:
         self.temp_hist[host_device_key].append(fpga_temp)
 
         for dev in xbutil_dump_json['devices']:
-            if dev['device_id'] != self.selected_device_id:
+            if dev['device_id'] != device_id:
                 continue
 
             self.power_hist[host_device_key].append(float(dev['electrical']['power_consumption_watts']))

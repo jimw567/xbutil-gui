@@ -8,11 +8,25 @@ if sys.version_info[0] < 2 or (sys.version_info[0] == 3 and sys.version_info[1] 
     sys.exit('ERROR: This program require Python 3.6 or newer. You are running %s' %
              '.'.join(map(str, sys.version_info[0:3])))
 
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 LABEL_WIDTH = 15
 COMBO_WIDTH = 50
 FIGURE_DPI = 100
 DEFAULT_XBUTIL_REFRESH_INTERVAL = 5
+
+#sheet column numbers
+SHEET_HOST_COL = 0
+SHEET_DEVICE_COL = 1
+SHEET_CU_COL = 2
+SHEET_CU_STATUS_COL = 3
+SHEET_LAST_UPDATED_COL = 4
+
+CU_STATUS_DICT = {
+    "0x1": "START",
+    "0x4": "IDLE", 
+    "0x8": "READY",
+    "0x10": "RESTART"
+}
 
 __resource_path__ = Path(__file__).parent / 'resources'
 __icon__ = __resource_path__ / 'xbutil-icon.gif'

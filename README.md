@@ -1,21 +1,36 @@
 # xbutil-gui
 A Python Tkinter GUI for Xilinx Vitis xbutil program
 
-# Instructions
-This program requires Python 3.6 or newer to run. You can run the commands 
-below to install Python 3.6 on Ubuntu 16.04:
+# Installation
+## OS
+xbutil-gui has been tested on CentOS 7.8 and Ubuntu 16.04.
+
+## Xilinx XRT
+[Xilinx XRT](https://github.com/Xilinx/XRT) version 2.8.0 or newer is required 
+on every host with Xilinx Alveo Accelerator Cards.
+
+## SSH authentication key
+xubtil-gui supports scaning hosts within a cluster. All hosts in the cluster
+need to have SSH authentication key set up so you can run commands on remote
+hosts with your username and without password. Follow instructions 
+on the [SSH Login without password](https://github.com/jimw567/xbutil-gui/wiki/SSH-login-without-password) page to set up SSH authentication key.
+
+
+## Python
+This program requires Python 3.6 or newer to run. 
+
+### Ubuntu 16.04
+The default Python on Ubuntu 16.04 is version 3.5. Run the commands below to 
+install Python 3.6
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
 sudo apt-get install python3.6 python3.6-venv python3.6-tk 
 ```
 
-## Install Python Tkinter
-### Ubuntu
-```
-sudo apt install python3-tk
-```
-### Redhat/CentOS 7.x
+### Redhat/CentOS 7.8
+The default Python on CentOS 7.8 is already version 3.6. You only need to 
+install Python Tkinter.
 ```
 sudo yum install python36-tkinter
 ```
@@ -30,7 +45,7 @@ python3.6 -m venv venv
 ## Install required Python packages
 `pip install -r requirements.txt`
 
-## Install xbutil
+## Install xbutil-gui
 `python setup.py develop`
 
 ## Run xbutil-gui
