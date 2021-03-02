@@ -26,9 +26,12 @@ from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
 auto_refresh_plot_seconds = 0
 xbutil_top = XbutilTop()
 xbutil_plot = XbutilPlot()
-
+shadow_sheet_hosts = ['' for i in range(SHEET_TOTAL_ROWS)]
+shadow_sheet_device_id_names = ['' for i in range(SHEET_TOTAL_ROWS)]
 
 def get_selected_host_device():
+    global shadow_sheet_hosts, shadow_sheet_device_id_names
+
     sheet_selected = sheet_cluster.get_currently_selected()
     if len(sheet_selected) == 0:
         messagebox.showinfo("showinfo", "Please select a cell or row on the sheet first.")
@@ -39,8 +42,8 @@ def get_selected_host_device():
     else:
         selected_row = sheet_selected[0]
 
-    selected_host = sheet_cluster.get_cell_data(selected_row, 0)
-    selected_device_id_name = sheet_cluster.get_cell_data(selected_row, 1)
+    selected_host = shadow_sheet_hosts[selected_row]
+    selected_device_id_name = shadow_sheet_device_id_names[selected_row]
     if len(selected_device_id_name) == 0:
         messagebox.showinfo("showinfo", "Please wait until devices are scanned.")
         return -2, None, None
@@ -129,6 +132,7 @@ sheet_cluster.column_width(column=SHEET_CU_STATUS_COL, width=100)
 sheet_cluster.column_width(column=SHEET_CU_USAGE_COL, width=100)
 sheet_cluster.column_width(column=SHEET_LAST_UPDATED_COL, width=200)
 cur_grid_row = cur_grid_row + 1
+sheet_cluster_last_row = 0
 
 # command buttons for selected host
 button_top = ttk.Button(root_window, text="top", command=show_top_window)
@@ -140,37 +144,73 @@ cur_grid_row = cur_grid_row + 1
 
 def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_cluster,
                          refresh_host):
-    global auto_refresh_host_idx, auto_refresh_sheet_row
+    global auto_refresh_host_idx, auto_refresh_sheet_row, sheet_cluster_last_row
+    global shadow_sheet_hosts, shadow_sheet_hosts
 
+    host_displayed = 0
     last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     for i_dn in range(len(devices_compute_units['device_id_names'])):
         #refresh_host = 'host' + str(i_dn)
         device_id_name = devices_compute_units['device_id_names'][i_dn]
         xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
         xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
+        dev_displayed = 0
         if len(devices_compute_units['compute_units'][i_dn]) > 0:
             for cu in devices_compute_units['compute_units'][i_dn]:
-                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
-                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, device_id_name)
+                h = refresh_host if host_displayed == 0 else ''
+                if host_displayed == 0:
+                    sheet_cluster.highlight_rows([auto_refresh_sheet_row], bg='light sky blue' )
+                else:
+                    sheet_cluster.dehighlight_rows([auto_refresh_sheet_row])
+
+                host_displayed = 1
+                dev = device_id_name if dev_displayed == 0 else '' 
+                dev_displayed = 1
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, h)
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, dev)
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, cu['name'])
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, cu['status'])
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_USAGE_COL, cu['usage'])
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_LAST_UPDATED_COL, last_udpated)
+                # save host/dev_id_name into shadow varaibles
+                shadow_sheet_hosts[auto_refresh_sheet_row] = refresh_host
+                shadow_sheet_device_id_names[auto_refresh_sheet_row] = device_id_name
                 auto_refresh_sheet_row = auto_refresh_sheet_row + 1
         else:
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
+            h = refresh_host if host_displayed == 0 else ''
+            if host_displayed == 0:
+                sheet_cluster.highlight_rows([auto_refresh_sheet_row], bg='light sky blue' )
+            else:
+                sheet_cluster.dehighlight_rows([auto_refresh_sheet_row])
+
+            host_displayed = 1
+            dev = device_id_name if dev_displayed == 0 else '' 
+            dev_displayed = 1
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, h)
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, device_id_name)
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, 'None')
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, 'NA')
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_USAGE_COL, '')
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_LAST_UPDATED_COL, last_udpated)
             auto_refresh_sheet_row = auto_refresh_sheet_row + 1
+            shadow_sheet_hosts[auto_refresh_sheet_row] = refresh_host
 
     sheet_cluster.refresh()
     auto_refresh_host_idx = auto_refresh_host_idx + 1
     if auto_refresh_host_idx == len(clusters[combo_cluster['values'][selected_cluster]]):
         auto_refresh_host_idx = 0
+        
+        if sheet_cluster_last_row > auto_refresh_sheet_row:
+            # clear contents from previous full scan
+            for r in range(auto_refresh_sheet_row, sheet_cluster_last_row+1):
+                for c in range(SHEET_TOTAL_COLS):
+                    sheet_cluster.set_cell_data(r, c, '')
+
+            # udpate the last row count
+            sheet_cluster_last_row = auto_refresh_sheet_row
+
         auto_refresh_sheet_row = 1
+
 
 
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
