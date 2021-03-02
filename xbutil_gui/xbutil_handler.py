@@ -52,7 +52,9 @@ def get_devices_compute_units(xbutil_dump_json):
         if isinstance(d['compute_units'], list):
             for cu in d['compute_units']:
                 cur_cu.append({'name': cu['name'],
-                               'status': CU_STATUS_DICT.get(cu['status']['bit_mask'], '--')})
+                               'usage': cu['usage'],
+                               'status': CU_STATUS_DICT.get(cu['status']['bit_mask'], 
+                                                            cu['status']['bit_mask'])})
         compute_units.append(cur_cu)
 
     devices_compute_units['device_ids'] = device_ids

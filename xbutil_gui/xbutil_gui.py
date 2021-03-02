@@ -17,8 +17,9 @@ from xbutil_gui.xbutil_handler import get_devices_compute_units, \
                                       get_xbutil_dump
 from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
                 DEFAULT_XBUTIL_REFRESH_INTERVAL, __resource_path__, __icon__, \
+                SHEET_TOTAL_ROWS, SHEET_TOTAL_COLS,  \
                 SHEET_HOST_COL, SHEET_DEVICE_COL, SHEET_CU_COL, SHEET_CU_STATUS_COL, \
-                SHEET_LAST_UPDATED_COL
+                SHEET_CU_USAGE_COL, SHEET_LAST_UPDATED_COL
 
 
 # interval in seconds between xbutil json dumps
@@ -87,8 +88,8 @@ cur_grid_row = cur_grid_row + 1
 # sheet for cluster
 sheet_cluster = Sheet(root_window,
                       default_row_index="numbers",
-                      total_rows=200,
-                      total_columns=5
+                      total_rows=SHEET_TOTAL_ROWS,
+                      total_columns=SHEET_TOTAL_COLS
                       )
 sheet_cluster.enable_bindings(("single_select",  # "single_select" or "toggle_select"
                                "drag_select",  # enables shift click selection as well
@@ -115,15 +116,17 @@ sheet_cluster.enable_bindings(("single_select",  # "single_select" or "toggle_se
                                "edit_cell"))
 sheet_cluster.grid(row=cur_grid_row, columnspan=4, sticky='nswe')
 root_window.grid_rowconfigure(cur_grid_row, weight=1)
-sheet_cluster.set_cell_data(0, 0, 'Host')
-sheet_cluster.set_cell_data(0, 1, 'Device ID::Shell')
-sheet_cluster.set_cell_data(0, 2, 'Compute Unit (CU)')
-sheet_cluster.set_cell_data(0, 3, 'CU Status')
-sheet_cluster.set_cell_data(0, 4, 'Last Updated')
+sheet_cluster.set_cell_data(0, SHEET_HOST_COL, 'Host')
+sheet_cluster.set_cell_data(0, SHEET_DEVICE_COL, 'Device ID::Shell')
+sheet_cluster.set_cell_data(0, SHEET_CU_COL, 'Compute Unit (CU)')
+sheet_cluster.set_cell_data(0, SHEET_CU_STATUS_COL, 'CU Status')
+sheet_cluster.set_cell_data(0, SHEET_CU_USAGE_COL, 'CU Usage')
+sheet_cluster.set_cell_data(0, SHEET_LAST_UPDATED_COL, 'Last Updated')
 sheet_cluster.column_width(column=SHEET_HOST_COL, width=150)
 sheet_cluster.column_width(column=SHEET_DEVICE_COL, width=500)
 sheet_cluster.column_width(column=SHEET_CU_COL, width=400)
 sheet_cluster.column_width(column=SHEET_CU_STATUS_COL, width=100)
+sheet_cluster.column_width(column=SHEET_CU_USAGE_COL, width=100)
 sheet_cluster.column_width(column=SHEET_LAST_UPDATED_COL, width=200)
 cur_grid_row = cur_grid_row + 1
 
@@ -135,50 +138,55 @@ button_plot.grid(row=cur_grid_row, column=2)
 cur_grid_row = cur_grid_row + 1
 
 
-# get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
-def refresh_database(json_file):
-    global auto_refresh_host_idx, clusters, auto_refresh_sheet_row, \
-           auto_refresh_plot_seconds
+def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_cluster,
+                         refresh_host):
+    global auto_refresh_host_idx, auto_refresh_sheet_row
 
-    selected_cluster = combo_cluster.current()
-    refresh_host = clusters[combo_cluster['values'][selected_cluster]][auto_refresh_host_idx]
-
-    xbutil_dump_json = get_xbutil_dump(json_file, host=refresh_host)
-
-    if xbutil_dump_json is not None:
-        devices_compute_units = get_devices_compute_units(xbutil_dump_json)
-
-        last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-        for i_dn in range(len(devices_compute_units['device_id_names'])):
-            #refresh_host = 'host' + str(i_dn)
-            device_id_name = devices_compute_units['device_id_names'][i_dn]
-            xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
-            xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
-            if len(devices_compute_units['compute_units'][i_dn]) > 0:
-                for cu in devices_compute_units['compute_units'][i_dn]:
-                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
-                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, device_id_name)
-                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, cu['name'])
-                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, cu['status'])
-                    sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_LAST_UPDATED_COL, last_udpated)
-                    auto_refresh_sheet_row = auto_refresh_sheet_row + 1
-            else:
+    last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    for i_dn in range(len(devices_compute_units['device_id_names'])):
+        #refresh_host = 'host' + str(i_dn)
+        device_id_name = devices_compute_units['device_id_names'][i_dn]
+        xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
+        xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
+        if len(devices_compute_units['compute_units'][i_dn]) > 0:
+            for cu in devices_compute_units['compute_units'][i_dn]:
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, device_id_name)
-                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, 'None')
-                #SHEET_CU_STATUS_COL
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, cu['name'])
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, cu['status'])
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_USAGE_COL, cu['usage'])
                 sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_LAST_UPDATED_COL, last_udpated)
                 auto_refresh_sheet_row = auto_refresh_sheet_row + 1
+        else:
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, device_id_name)
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, 'None')
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, 'NA')
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_USAGE_COL, '')
+            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_LAST_UPDATED_COL, last_udpated)
+            auto_refresh_sheet_row = auto_refresh_sheet_row + 1
 
-        sheet_cluster.refresh()
-
-        xbutil_top.show_top_info()
-        xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
-
+    sheet_cluster.refresh()
     auto_refresh_host_idx = auto_refresh_host_idx + 1
     if auto_refresh_host_idx == len(clusters[combo_cluster['values'][selected_cluster]]):
         auto_refresh_host_idx = 0
         auto_refresh_sheet_row = 1
+
+
+# get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
+def refresh_database(json_file):
+    global auto_refresh_plot_seconds
+
+    selected_cluster = combo_cluster.current()
+    refresh_host = clusters[combo_cluster['values'][selected_cluster]][auto_refresh_host_idx]
+    xbutil_dump_json = get_xbutil_dump(json_file, host=refresh_host)
+
+    if xbutil_dump_json is not None:
+        devices_compute_units = get_devices_compute_units(xbutil_dump_json)
+        update_sheet_cluster(devices_compute_units, xbutil_dump_json,
+                             selected_cluster, refresh_host)
+        xbutil_top.show_top_info()
+        xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
 
     # add refresh_database back to the eventloop
     auto_refresh_plot_seconds = auto_refresh_plot_seconds + DEFAULT_XBUTIL_REFRESH_INTERVAL
@@ -188,7 +196,7 @@ def refresh_database(json_file):
 
 def main():
     global plot_metric, prev_cluster_name, clusters, auto_refresh_host_idx, \
-           auto_refresh_sheet_row, xbutil_plot
+           auto_refresh_sheet_row
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--json-file', dest='json_file', default=None,
