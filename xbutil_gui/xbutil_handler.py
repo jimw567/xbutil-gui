@@ -33,31 +33,36 @@ def get_xbutil_dump(json_file, host='localhost'):
 def get_devices_compute_units(xbutil_dump_json):
     devices_compute_units = {}
     device_id_names = []
+    device_vbnvs = []
     device_ids = []
     compute_units = []
     
     if xbutil_dump_json is None:
         return []
 
-    devices_vbnvs = {}
+    tmp_devices_vbnvs = {}
     for d in xbutil_dump_json['system']['host']['devices']:
-        devices_vbnvs[d['bdf']] = d['vbnv']
+        tmp_devices_vbnvs[d['bdf']] = d['vbnv']
 
     for d in xbutil_dump_json['devices']:
         device_id = d['device_id']
-        device_vbnv = devices_vbnvs[device_id]
+        device_vbnv = tmp_devices_vbnvs[device_id]
         device_ids.append(device_id)
+        device_vbnvs.append(device_vbnv)
         device_id_names.append(device_id + '::' + device_vbnv)
         cur_cu = []
         if isinstance(d['compute_units'], list):
             for cu in d['compute_units']:
-                cur_cu.append({'name': cu['name'],
-                               'usage': cu['usage'],
-                               'status': CU_STATUS_DICT.get(cu['status']['bit_mask'], 
+                cur_cu.append({'name': cu['name'], 'usage': cu['usage'],
+                               'status': CU_STATUS_DICT.get(cu['status']['bit_mask'],
                                                             cu['status']['bit_mask'])})
+        else:
+            cur_cu.append({'name': 'NA', 'usage': '-', 'status': '-'})
+
         compute_units.append(cur_cu)
 
     devices_compute_units['device_ids'] = device_ids
+    devices_compute_units['device_vbnvs'] = device_vbnvs
     devices_compute_units['device_id_names'] = device_id_names
     devices_compute_units['compute_units'] = compute_units
 

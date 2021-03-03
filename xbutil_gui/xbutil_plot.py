@@ -42,6 +42,17 @@ class XbutilPlot:
         self.vccint_hist = {}
         self.iccint_hist = {}
 
+    def get_last_metrics(self, host, device_id_name):
+        host_device_key = host + device_id_name
+        if self.power_hist.get(host_device_key) is not None:
+            power = self.power_hist[host_device_key][-1]
+            temp = self.temp_hist[host_device_key][-1]
+        else:
+            power = 0
+            temp = 0
+
+        return power, temp
+
     def plot_metrics(self, auto_refresh_seconds):
         if not (self.window_plot is not None and tk.Toplevel.winfo_exists(self.window_plot)):
             return

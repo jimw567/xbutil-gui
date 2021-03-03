@@ -1,0 +1,9 @@
+{
+    "xilinx_u50_gen3x16_xdma_201920_3": {
+        "fpga_temp": {
+            "warning": 88,
+            "critical": 97,
+            "fatal": 110
+        }
+    }
+}
