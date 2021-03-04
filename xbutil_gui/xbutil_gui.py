@@ -14,7 +14,7 @@ from pathlib import Path
 from xbutil_gui.xbutil_top import XbutilTop
 from xbutil_gui.xbutil_plot import XbutilPlot
 from xbutil_gui.xbutil_handler import get_devices_compute_units, \
-                                      get_xbutil_dump
+                                      get_xbutil_dump, get_devices_from_lspci
 from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
                 DEFAULT_XBUTIL_REFRESH_INTERVAL, __resource_path__, __icon__, \
                 SHEET_TOTAL_ROWS, SHEET_TOTAL_COLS,  \
@@ -29,6 +29,7 @@ xbutil_top = XbutilTop()
 xbutil_plot = XbutilPlot()
 shadow_sheet_hosts = ['' for i in range(SHEET_TOTAL_ROWS)]
 shadow_sheet_device_id_names = ['' for i in range(SHEET_TOTAL_ROWS)]
+pause_sheet = 0
 
 def get_selected_host_device():
     global shadow_sheet_hosts, shadow_sheet_device_id_names
@@ -66,6 +67,31 @@ def show_plot_window():
         return
 
     xbutil_plot.show_plot_window(root_window, selected_host, selected_device_id_name)
+
+
+def toggle_pause_sheet():
+    global pause_sheet
+    if pause_sheet == 0:
+        pause_sheet = 1
+        button_pause_sheet['text'] = 'Resume'
+    else:
+        pause_sheet = 0
+        button_pause_sheet['text'] = 'Pause'
+
+
+def flash_devices():
+    host = 'xsj-dxgradb04'
+    passowrd = '12345678'
+    xbmgmt_cmd = ['echo', password, '|', 
+                  'sudo', '-S', '/opt/xilinx/xrt/bin/xbmgmt', 'flash', '--update', 
+                  '--shell', 'xilinx_u50_gen3x16_xdma_201920_3', '--force']
+    command = ['ssh', host] + xbmgmt_cmd
+    print(' '.join(command))
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for l in iter(lambda: p.stdout.readline(), b''): 
+        print(l)
+
+    print('INFO: Completed flashing all devices')
 
 
 ###############################################################################
@@ -141,20 +167,28 @@ sheet_cluster_last_row = 0
 
 # command buttons for selected host
 button_top = ttk.Button(root_window, text="top", command=show_top_window)
-button_top.grid(row=cur_grid_row, column=1)
+button_top.grid(row=cur_grid_row, column=0)
 button_plot = ttk.Button(root_window, text="plot", command=show_plot_window)
-button_plot.grid(row=cur_grid_row, column=2)
+button_plot.grid(row=cur_grid_row, column=1)
+button_pause_sheet = ttk.Button(root_window, text="Pause", command=toggle_pause_sheet)
+button_pause_sheet.grid(row=cur_grid_row, column=2)
+button_flash_devices = ttk.Button(root_window, text="Flash", command=flash_devices)
+button_flash_devices.grid(row=cur_grid_row, column=3)
 cur_grid_row = cur_grid_row + 1
 
 # global variables
-alveo_spec_dict = {}
 auto_refresh_host_idx = 0
 auto_refresh_sheet_row = 0
+alveo_spec_dict = {}
+
 
 def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_cluster,
                          refresh_host):
     global auto_refresh_host_idx, auto_refresh_sheet_row, sheet_cluster_last_row
-    global shadow_sheet_hosts, shadow_sheet_hosts, alveo_spec_dict
+    global shadow_sheet_hosts, shadow_sheet_hosts, alveo_spec_dict, pause_sheet
+
+    if pause_sheet == 1:
+        return
 
     host_displayed = 0
     last_udpated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
@@ -164,9 +198,9 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         device_vbnv = devices_compute_units['device_vbnvs'][i_dn]
         device_id_name = devices_compute_units['device_id_names'][i_dn]
         last_metrics = xbutil_plot.get_last_metrics(refresh_host, device_id_name)
-        print(last_metrics)
-        xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
-        xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
+        if xbutil_dump_json is not None:
+            xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
+            xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
         dev_displayed = 0
         for cu in devices_compute_units['compute_units'][i_dn]:
             if host_displayed == 0:
@@ -222,11 +256,11 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
 
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
 def refresh_database(json_file):
-    global auto_refresh_plot_seconds
+    global auto_refresh_plot_seconds, auto_refresh_host_idx
 
     selected_cluster = combo_cluster.current()
     refresh_host = clusters[combo_cluster['values'][selected_cluster]][auto_refresh_host_idx]
-    xbutil_dump_json = get_xbutil_dump(json_file, host=refresh_host)
+    xbutil_dump_json,lspci_dict = get_xbutil_dump(json_file, host=refresh_host)
 
     if xbutil_dump_json is not None:
         devices_compute_units = get_devices_compute_units(xbutil_dump_json)
@@ -234,6 +268,15 @@ def refresh_database(json_file):
                              selected_cluster, refresh_host)
         xbutil_top.show_top_info()
         xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
+    elif lspci_dict:
+        devices_compute_units = get_devices_from_lspci(lspci_dict, alveo_spec_dict)
+        update_sheet_cluster(devices_compute_units, xbutil_dump_json,
+                             selected_cluster, refresh_host)
+    else:
+        # something wrong with current refresh host. Move on to the next host
+        auto_refresh_host_idx = auto_refresh_host_idx + 1
+        if auto_refresh_host_idx == len(clusters[combo_cluster['values'][selected_cluster]]):
+            auto_refresh_host_idx = 0
 
     # add refresh_database back to the eventloop
     auto_refresh_plot_seconds = auto_refresh_plot_seconds + DEFAULT_XBUTIL_REFRESH_INTERVAL
@@ -270,8 +313,6 @@ def main():
     alveo_spec_file = __resource_path__ / 'alveo-specifications.json'
     with open(alveo_spec_file, 'r') as fp:
         alveo_spec_dict = json.load(fp)
-
-    print(alveo_spec_file, alveo_spec_dict)
 
     clusters = xbutil_config_json.get('clusters', [])
     for k in clusters.keys():
