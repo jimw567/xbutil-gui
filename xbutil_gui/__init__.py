@@ -10,7 +10,7 @@ if sys.version_info[0] < 2 or (sys.version_info[0] == 3 and sys.version_info[1] 
 
 VERSION = '0.0.4'
 LABEL_WIDTH = 15
-COMBO_WIDTH = 50
+COMBO_WIDTH = 40
 FIGURE_DPI = 100
 DEFAULT_XBUTIL_REFRESH_INTERVAL = 5
 

@@ -1,17 +1,13 @@
 {
-    "xilinx_u50_gen3x16_xdma_201920_3": {
+    "u50": {
         "fpga_temp": {
             "warning": 88,
             "critical": 97,
             "fatal": 110
         }
     },
-    "U50-ShellNotFlashed": {
-        "fpga_temp": {
-            "warning": 88,
-            "critical": 97,
-            "fatal": 110
-        }
+    "shell_board_lut": {
+        "xilinx_u50_gen3x16_xdma_201920_3": "u50"
     },
     "NA": {
         "fpga_temp": {
@@ -21,6 +17,6 @@
         }
     },
     "pcie_device_ids": {
-        "d020": "U50-ShellNotFlashed"
+        "d020": "xilinx_u50"
     }
 }

@@ -81,7 +81,7 @@ def toggle_pause_sheet():
 
 def flash_devices():
     host = 'xsj-dxgradb04'
-    passowrd = '12345678'
+    password = '12345678'
     xbmgmt_cmd = ['echo', password, '|', 
                   'sudo', '-S', '/opt/xilinx/xrt/bin/xbmgmt', 'flash', '--update', 
                   '--shell', 'xilinx_u50_gen3x16_xdma_201920_3', '--force']
@@ -102,17 +102,19 @@ root_window.geometry('1500x400+20+20')
 root_window.title('Xilinx xbutil GUI ' + VERSION)
 root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
-root_window.grid_columnconfigure(0, weight=0)
-root_window.grid_columnconfigure(1, weight=0)
-root_window.grid_columnconfigure(2, weight=0)
-root_window.grid_columnconfigure(3, weight=1)
+root_window.columnconfigure(0, weight=0, minsize=150)
+root_window.columnconfigure(1, weight=0, minsize=150)
+root_window.columnconfigure(2, weight=0, minsize=150)
+root_window.columnconfigure(3, weight=0, minsize=150)
+root_window.columnconfigure(4, weight=0, minsize=150)
+root_window.columnconfigure(5, weight=1, minsize=150)
 
 cur_grid_row = 0
 label_cluster = ttk.Label(root_window, text="Cluster", width=LABEL_WIDTH, anchor='w')
 label_cluster.grid(row=cur_grid_row, column=0,  sticky='w')
 combo_cluster = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_cluster['values'] = []
-combo_cluster.grid(row=cur_grid_row, column=1, sticky='w')
+combo_cluster.grid(row=cur_grid_row, column=1, columnspan=3, sticky='w')
 cur_grid_row = cur_grid_row + 1
 
 # sheet for cluster
@@ -144,7 +146,7 @@ sheet_cluster.enable_bindings(("single_select",  # "single_select" or "toggle_se
                                "delete",
                                "undo",
                                "edit_cell"))
-sheet_cluster.grid(row=cur_grid_row, columnspan=4, sticky='nswe')
+sheet_cluster.grid(row=cur_grid_row, columnspan=6, sticky='nswe')
 root_window.grid_rowconfigure(cur_grid_row, weight=1)
 sheet_cluster.set_cell_data(0, SHEET_HOST_COL, 'Host')
 sheet_cluster.set_cell_data(0, SHEET_DEVICE_COL, 'Device ID::Shell')
@@ -166,17 +168,21 @@ cur_grid_row = cur_grid_row + 1
 sheet_cluster_last_row = 0
 
 # command buttons for selected host
-button_top = ttk.Button(root_window, text="top", command=show_top_window)
-button_top.grid(row=cur_grid_row, column=0)
-button_plot = ttk.Button(root_window, text="plot", command=show_plot_window)
-button_plot.grid(row=cur_grid_row, column=1)
-button_pause_sheet = ttk.Button(root_window, text="Pause", command=toggle_pause_sheet)
-button_pause_sheet.grid(row=cur_grid_row, column=2)
+button_top = ttk.Button(root_window, text="Top", command=show_top_window)
+button_top.grid(row=cur_grid_row, column=1, pady=10)
+
+button_plot = ttk.Button(root_window, text="Plot", command=show_plot_window)
+button_plot.grid(row=cur_grid_row, column=2, pady=10)
+
 button_flash_devices = ttk.Button(root_window, text="Flash", command=flash_devices)
-button_flash_devices.grid(row=cur_grid_row, column=3)
+button_flash_devices.grid(row=cur_grid_row, column=3, pady=10)
+
+button_pause_sheet = ttk.Button(root_window, text="Pause", command=toggle_pause_sheet)
+button_pause_sheet.grid(row=cur_grid_row, column=4, pady=10)
 cur_grid_row = cur_grid_row + 1
 
 # global variables
+cur_cluster_name = ""
 auto_refresh_host_idx = 0
 auto_refresh_sheet_row = 0
 alveo_spec_dict = {}
@@ -208,10 +214,11 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
                 h_display = refresh_host
                 p_display = last_metrics[0]
                 t_display = last_metrics[1]
-                if t_display > alveo_spec_dict[device_vbnv]['fpga_temp']['critical']:
+                board = alveo_spec_dict["shell_board_lut"][device_vbnv]
+                if t_display > alveo_spec_dict[board]['fpga_temp']['critical']:
                     sheet_cluster.highlight_cells(auto_refresh_sheet_row,
                                                   SHEET_TEMP_COL, bg='red')
-                elif t_display > alveo_spec_dict[device_vbnv]['fpga_temp']['warning']:
+                elif t_display > alveo_spec_dict[board]['fpga_temp']['warning']:
                     sheet_cluster.highlight_cells(auto_refresh_sheet_row,
                                                   SHEET_TEMP_COL, bg='yellow')
             else:
@@ -243,23 +250,32 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         
         if sheet_cluster_last_row > auto_refresh_sheet_row:
             # clear contents from previous full scan
+            sheet_cluster.dehighlight_rows(range(auto_refresh_sheet_row, sheet_cluster_last_row+1))
             for r in range(auto_refresh_sheet_row, sheet_cluster_last_row+1):
                 for c in range(SHEET_TOTAL_COLS):
                     sheet_cluster.set_cell_data(r, c, '')
 
-            # udpate the last row count
-            sheet_cluster_last_row = auto_refresh_sheet_row
-
+        # udpate the last row count
+        sheet_cluster_last_row = auto_refresh_sheet_row
         auto_refresh_sheet_row = 1
 
 
 
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
 def refresh_database(json_file):
-    global auto_refresh_plot_seconds, auto_refresh_host_idx
+    global auto_refresh_plot_seconds, auto_refresh_host_idx, cur_cluster_name, \
+           auto_refresh_sheet_row, sheet_cluster_last_row
 
     selected_cluster = combo_cluster.current()
-    refresh_host = clusters[combo_cluster['values'][selected_cluster]][auto_refresh_host_idx]
+    selected_cluster_name = combo_cluster['values'][selected_cluster]
+    if cur_cluster_name != selected_cluster_name:
+        print('INFO: switch to new cluster', selected_cluster_name)
+        auto_refresh_host_idx = 0
+        auto_refresh_sheet_row = 1
+        cur_cluster_name = selected_cluster_name
+        sheet_cluster_last_row = SHEET_TOTAL_ROWS - 1
+
+    refresh_host = clusters[selected_cluster_name][auto_refresh_host_idx]
     xbutil_dump_json,lspci_dict = get_xbutil_dump(json_file, host=refresh_host)
 
     if xbutil_dump_json is not None:
@@ -275,7 +291,7 @@ def refresh_database(json_file):
     else:
         # something wrong with current refresh host. Move on to the next host
         auto_refresh_host_idx = auto_refresh_host_idx + 1
-        if auto_refresh_host_idx == len(clusters[combo_cluster['values'][selected_cluster]]):
+        if auto_refresh_host_idx == len(clusters[selected_cluster_name]):
             auto_refresh_host_idx = 0
 
     # add refresh_database back to the eventloop
@@ -284,7 +300,7 @@ def refresh_database(json_file):
 
 
 def main():
-    global plot_metric, prev_cluster_name, clusters, auto_refresh_host_idx, \
+    global plot_metric, cur_cluster_name, clusters, auto_refresh_host_idx, \
            auto_refresh_sheet_row, alveo_spec_dict
 
     parser = argparse.ArgumentParser()
@@ -326,7 +342,7 @@ def main():
         for host in clusters[cluster_names[0]]:
             sheet_cluster.set_cell_data(row, 0, host)
             row = row + 1
-        prev_cluster_name = cluster_names[0]
+        cur_cluster_name = cluster_names[0]
         auto_refresh_host_idx = 0
         auto_refresh_sheet_row = 1
 
