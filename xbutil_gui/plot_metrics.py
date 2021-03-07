@@ -11,7 +11,7 @@ from xbutil_gui import VERSION, COMBO_WIDTH, LABEL_WIDTH, FIGURE_DPI, \
                        DEFAULT_XBUTIL_REFRESH_INTERVAL
 
 
-class XbutilPlot:
+class PlotMetrics:
     def __init__(self):
         self.selected_host = None
         self.selected_device_id_name = None

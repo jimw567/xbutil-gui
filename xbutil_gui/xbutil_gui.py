@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-from tkinter import ttk, Toplevel, scrolledtext, messagebox
+from tkinter import ttk, messagebox, simpledialog
 from tksheet import Sheet
 import subprocess
 import os
@@ -12,7 +12,8 @@ import argparse
 from pathlib import Path
 
 from xbutil_gui.xbutil_top import XbutilTop
-from xbutil_gui.xbutil_plot import XbutilPlot
+from xbutil_gui.plot_metrics import PlotMetrics
+from xbutil_gui.device_manager import DeviceManager
 from xbutil_gui.xbutil_handler import get_devices_compute_units, \
                                       get_xbutil_dump, get_devices_from_lspci
 from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
@@ -26,7 +27,9 @@ from xbutil_gui import VERSION, LABEL_WIDTH, COMBO_WIDTH, STATUS_CODES, \
 # interval in seconds between xbutil json dumps
 auto_refresh_plot_seconds = 0
 xbutil_top = XbutilTop()
-xbutil_plot = XbutilPlot()
+plot_metrics = PlotMetrics()
+device_manager = DeviceManager()
+
 shadow_sheet_hosts = ['' for i in range(SHEET_TOTAL_ROWS)]
 shadow_sheet_device_id_names = ['' for i in range(SHEET_TOTAL_ROWS)]
 pause_sheet = 0
@@ -66,7 +69,16 @@ def show_plot_window():
     if status < 0:
         return
 
-    xbutil_plot.show_plot_window(root_window, selected_host, selected_device_id_name)
+    plot_metrics.show_plot_window(root_window, selected_host, selected_device_id_name)
+
+def show_devman_window():
+    sudo_password = tk.simpledialog.askstring("Password",
+                                              "Enter Sudo password:", show='*')
+    selected_cluster = combo_cluster.current()
+    selected_cluster_name = combo_cluster['values'][selected_cluster]
+
+    device_manager.show_devman_window(root_window, selected_cluster_name)
+    device_manager.get_devices(sudo_password, clusters[selected_cluster_name])
 
 
 def toggle_pause_sheet():
@@ -78,20 +90,6 @@ def toggle_pause_sheet():
         pause_sheet = 0
         button_pause_sheet['text'] = 'Pause'
 
-
-def flash_devices():
-    host = 'xsj-dxgradb04'
-    password = '12345678'
-    xbmgmt_cmd = ['echo', password, '|', 
-                  'sudo', '-S', '/opt/xilinx/xrt/bin/xbmgmt', 'flash', '--update', 
-                  '--shell', 'xilinx_u50_gen3x16_xdma_201920_3', '--force']
-    command = ['ssh', host] + xbmgmt_cmd
-    print(' '.join(command))
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    for l in iter(lambda: p.stdout.readline(), b''): 
-        print(l)
-
-    print('INFO: Completed flashing all devices')
 
 
 ###############################################################################
@@ -174,8 +172,8 @@ button_top.grid(row=cur_grid_row, column=1, pady=10)
 button_plot = ttk.Button(root_window, text="Plot", command=show_plot_window)
 button_plot.grid(row=cur_grid_row, column=2, pady=10)
 
-button_flash_devices = ttk.Button(root_window, text="Flash", command=flash_devices)
-button_flash_devices.grid(row=cur_grid_row, column=3, pady=10)
+button_manage_devices = ttk.Button(root_window, text="Manage", command=show_devman_window)
+button_manage_devices.grid(row=cur_grid_row, column=3, pady=10)
 
 button_pause_sheet = ttk.Button(root_window, text="Pause", command=toggle_pause_sheet)
 button_pause_sheet.grid(row=cur_grid_row, column=4, pady=10)
@@ -203,10 +201,10 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         #refresh_host = 'host' + str(i_dn)
         device_vbnv = devices_compute_units['device_vbnvs'][i_dn]
         device_id_name = devices_compute_units['device_id_names'][i_dn]
-        last_metrics = xbutil_plot.get_last_metrics(refresh_host, device_id_name)
+        last_metrics = plot_metrics.get_last_metrics(refresh_host, device_id_name)
         if xbutil_dump_json is not None:
             xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
-            xbutil_plot.update_history(xbutil_dump_json, refresh_host, device_id_name)
+            plot_metrics.update_history(xbutil_dump_json, refresh_host, device_id_name)
         dev_displayed = 0
         for cu in devices_compute_units['compute_units'][i_dn]:
             if host_displayed == 0:
@@ -283,7 +281,7 @@ def refresh_database(json_file):
         update_sheet_cluster(devices_compute_units, xbutil_dump_json,
                              selected_cluster, refresh_host)
         xbutil_top.show_top_info()
-        xbutil_plot.plot_metrics(auto_refresh_plot_seconds)
+        plot_metrics.plot_metrics(auto_refresh_plot_seconds)
     elif lspci_dict:
         devices_compute_units = get_devices_from_lspci(lspci_dict, alveo_spec_dict)
         update_sheet_cluster(devices_compute_units, xbutil_dump_json,
@@ -329,6 +327,8 @@ def main():
     alveo_spec_file = __resource_path__ / 'alveo-specifications.json'
     with open(alveo_spec_file, 'r') as fp:
         alveo_spec_dict = json.load(fp)
+
+    device_manager.alveo_spec_dict = alveo_spec_dict
 
     clusters = xbutil_config_json.get('clusters', [])
     for k in clusters.keys():
