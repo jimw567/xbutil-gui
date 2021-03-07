@@ -72,8 +72,7 @@ def show_plot_window():
     plot_metrics.show_plot_window(root_window, selected_host, selected_device_id_name)
 
 def show_devman_window():
-    sudo_password = tk.simpledialog.askstring("Password",
-                                              "Enter Sudo password:", show='*')
+    sudo_password = tk.simpledialog.askstring("Password", "Enter Sudo password:", show='*')
     selected_cluster = combo_cluster.current()
     selected_cluster_name = combo_cluster['values'][selected_cluster]
 
@@ -89,7 +88,6 @@ def toggle_pause_sheet():
     else:
         pause_sheet = 0
         button_pause_sheet['text'] = 'Pause'
-
 
 
 ###############################################################################
