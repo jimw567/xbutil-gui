@@ -35,18 +35,22 @@ install Python Tkinter.
 sudo yum install python36-tkinter
 ```
 
-
 ## Create and activate a Python3 virtual environment
 ```
 python3.6 -m venv venv
 . venv/bin/activate
 ```
 
-## Install required Python packages
-`pip install -r requirements.txt`
+### Install xbutil GUI as a regular user
+`pip install xbutil_gui`
 
-## Install xbutil-gui
-`python setup.py develop`
+### Install xbutil GUI as a contributor
+```
+git clone https://github.com/jimw567/xbutil-gui.git
+cd xbutil-gui
+pip install -r requirements.txt`
+python setup.py develop
+```
 
 ## Run xbutil-gui
 `xbutil_gui`

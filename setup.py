@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# xbutil GUI
-#
+# xbutil GUI setup.py
 # Developers: Jim Wu, Annie Ren
-#
 # MIT License
-#
-# Copyright (c) 2020-2021 xbutil GUI contributors
+# Copyright (c) 2020-2021 xbutil GUI Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +44,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/jimw567/xbutil-gui",
     packages=['xbutil_gui'],
+    install_requires=['pandas', 'matplotlib', 'tksheet'],
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

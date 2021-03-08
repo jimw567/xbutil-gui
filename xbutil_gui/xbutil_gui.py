@@ -94,7 +94,7 @@ def toggle_pause_sheet():
 # root window
 ###############################################################################
 root_window = tk.Tk()
-root_window.geometry('1500x400+20+20')
+root_window.geometry('1500x700+20+20')
 root_window.title('Xilinx xbutil GUI ' + VERSION)
 root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
@@ -107,10 +107,10 @@ root_window.columnconfigure(5, weight=1, minsize=150)
 
 cur_grid_row = 0
 label_cluster = ttk.Label(root_window, text="Cluster", width=LABEL_WIDTH, anchor='w')
-label_cluster.grid(row=cur_grid_row, column=0,  sticky='w')
+label_cluster.grid(row=cur_grid_row, column=0,  sticky='w', pady=10)
 combo_cluster = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_cluster['values'] = []
-combo_cluster.grid(row=cur_grid_row, column=1, columnspan=3, sticky='w')
+combo_cluster.grid(row=cur_grid_row, column=1, columnspan=3, sticky='w', pady=10)
 cur_grid_row = cur_grid_row + 1
 
 # sheet for cluster
@@ -153,8 +153,8 @@ sheet_cluster.set_cell_data(0, SHEET_POWER_COL, 'P(W)')
 sheet_cluster.set_cell_data(0, SHEET_TEMP_COL, 'T(C)')
 sheet_cluster.set_cell_data(0, SHEET_LAST_UPDATED_COL, 'Last Updated')
 sheet_cluster.column_width(column=SHEET_HOST_COL, width=150)
-sheet_cluster.column_width(column=SHEET_DEVICE_COL, width=400)
-sheet_cluster.column_width(column=SHEET_CU_COL, width=400)
+sheet_cluster.column_width(column=SHEET_DEVICE_COL, width=300)
+sheet_cluster.column_width(column=SHEET_CU_COL, width=300)
 sheet_cluster.column_width(column=SHEET_CU_STATUS_COL, width=60)
 sheet_cluster.column_width(column=SHEET_CU_USAGE_COL, width=60)
 sheet_cluster.column_width(column=SHEET_POWER_COL, width=50)
@@ -203,13 +203,23 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         if xbutil_dump_json is not None:
             xbutil_top.generate_top_dict(xbutil_dump_json, refresh_host, device_id_name)
             plot_metrics.update_history(xbutil_dump_json, refresh_host, device_id_name)
+        
         dev_displayed = 0
         for cu in devices_compute_units['compute_units'][i_dn]:
             if host_displayed == 0:
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, refresh_host)
                 sheet_cluster.highlight_rows([auto_refresh_sheet_row], bg='light sky blue' )
-                h_display = refresh_host
+            else:
+                sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, '')
+                sheet_cluster.dehighlight_rows([auto_refresh_sheet_row])
+
+            host_displayed = 1
+
+            if dev_displayed == 0:
+                dev = device_id_name
                 p_display = last_metrics[0]
                 t_display = last_metrics[1]
+
                 board = alveo_spec_dict["shell_board_lut"][device_vbnv]
                 if t_display > alveo_spec_dict[board]['fpga_temp']['critical']:
                     sheet_cluster.highlight_cells(auto_refresh_sheet_row,
@@ -218,15 +228,11 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
                     sheet_cluster.highlight_cells(auto_refresh_sheet_row,
                                                   SHEET_TEMP_COL, bg='yellow')
             else:
-                sheet_cluster.dehighlight_rows([auto_refresh_sheet_row])
-                h_display = ''
+                dev = ''
                 p_display = ''
                 t_display = ''
 
-            host_displayed = 1
-            dev = device_id_name if dev_displayed == 0 else ''
             dev_displayed = 1
-            sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_HOST_COL, h_display)
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_DEVICE_COL, dev)
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_COL, cu['name'])
             sheet_cluster.set_cell_data(auto_refresh_sheet_row, SHEET_CU_STATUS_COL, cu['status'])
@@ -238,6 +244,7 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
             shadow_sheet_hosts[auto_refresh_sheet_row] = refresh_host
             shadow_sheet_device_id_names[auto_refresh_sheet_row] = device_id_name
             auto_refresh_sheet_row = auto_refresh_sheet_row + 1
+
 
     sheet_cluster.refresh()
     auto_refresh_host_idx = auto_refresh_host_idx + 1
@@ -254,7 +261,6 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         # udpate the last row count
         sheet_cluster_last_row = auto_refresh_sheet_row
         auto_refresh_sheet_row = 1
-
 
 
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
@@ -306,9 +312,9 @@ def main():
                         help='Specify plot type: power, temperature, or voltage')
     args = parser.parse_args()
     plot_metric = args.plot_metric
-    if args.json_file is None and shutil.which('xbutil') is None:
-        print(STATUS_CODES['XRT_NOT_SETUP']['message'])
-        exit(STATUS_CODES['XRT_NOT_SETUP']['code'])
+    #if args.json_file is None and shutil.which('xbutil') is None:
+    #    print(STATUS_CODES['XRT_NOT_SETUP']['message'])
+    #    exit(STATUS_CODES['XRT_NOT_SETUP']['code'])
 
     home = os.path.expanduser("~")
     user_config_file = home + '/xbutil-gui-config.json'

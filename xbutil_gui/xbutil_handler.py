@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# xbutil GUI xbutil Command Handler Module
+# Developers: Jim Wu, Annie Ren
+# MIT License
+# Copyright (c) 2020-2021 xbutil GUI Developers
 
 import subprocess
 import json
