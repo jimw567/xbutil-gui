@@ -10,6 +10,7 @@ import shutil
 import datetime
 import argparse
 from pathlib import Path
+import socket
 
 from xbutil_gui.xbutil_top import XbutilTop
 from xbutil_gui.plot_metrics import PlotMetrics
@@ -33,6 +34,8 @@ device_manager = DeviceManager()
 shadow_sheet_hosts = ['' for i in range(SHEET_TOTAL_ROWS)]
 shadow_sheet_device_id_names = ['' for i in range(SHEET_TOTAL_ROWS)]
 pause_sheet = 0
+no_supassword = False
+
 
 def get_selected_host_device():
     global shadow_sheet_hosts, shadow_sheet_device_id_names
@@ -72,12 +75,22 @@ def show_plot_window():
     plot_metrics.show_plot_window(root_window, selected_host, selected_device_id_name)
 
 def show_devman_window():
-    sudo_password = tk.simpledialog.askstring("Password", "Enter Sudo password:", show='*')
+    if not no_sudo_passwd:
+        sudo_password = tk.simpledialog.askstring("Password", "Enter Sudo password:", show='*')
+        if sudo_password is None or sudo_password == '':
+            return
+
+        # Save the password to a file with permission 0o600 to be secure
+        password_file = os.path.expanduser("~") + '/.xbutil-gui-tmp'
+        with open(password_file, 'w') as fh:
+            os.chmod(password_file, 0o600)
+            fh.write(sudo_password)
+
     selected_cluster = combo_cluster.current()
     selected_cluster_name = combo_cluster['values'][selected_cluster]
 
     device_manager.show_devman_window(root_window, selected_cluster_name)
-    device_manager.get_devices(sudo_password, clusters[selected_cluster_name])
+    device_manager.get_devices(clusters[selected_cluster_name])
 
 
 def toggle_pause_sheet():
@@ -93,9 +106,10 @@ def toggle_pause_sheet():
 ###############################################################################
 # root window
 ###############################################################################
+running_host = socket.gethostname()
 root_window = tk.Tk()
 root_window.geometry('1500x700+20+20')
-root_window.title('Xilinx xbutil GUI ' + VERSION)
+root_window.title('Xilinx xbutil GUI ' + VERSION + ' runnning on ' + running_host)
 root_window_icon = tk.PhotoImage(file=str(__icon__))
 root_window.iconphoto(True, root_window_icon)
 root_window.columnconfigure(0, weight=0, minsize=150)
@@ -303,18 +317,15 @@ def refresh_database(json_file):
 
 def main():
     global plot_metric, cur_cluster_name, clusters, auto_refresh_host_idx, \
-           auto_refresh_sheet_row, alveo_spec_dict
+           auto_refresh_sheet_row, alveo_spec_dict, no_sudo_passwd
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--json-file', dest='json_file', default=None,
                         help='Specify a JSON file for getting the data')
-    parser.add_argument('--plot-type', dest='plot_metric', default='power',
-                        help='Specify plot type: power, temperature, or voltage')
+    parser.add_argument('--no-sudo-passwd', action='store_true', dest='no_sudo_passwd', 
+                        help='Do not prompt for sudo password')
     args = parser.parse_args()
-    plot_metric = args.plot_metric
-    #if args.json_file is None and shutil.which('xbutil') is None:
-    #    print(STATUS_CODES['XRT_NOT_SETUP']['message'])
-    #    exit(STATUS_CODES['XRT_NOT_SETUP']['code'])
+    no_sudo_passwd = args.no_sudo_passwd
 
     home = os.path.expanduser("~")
     user_config_file = home + '/xbutil-gui-config.json'

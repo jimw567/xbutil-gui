@@ -134,36 +134,31 @@ class DeviceManager:
         #
         # print('INFO: Completed flashing all devices')
 
-    def get_devices(self, sudo_password, hosts):
-        # first save the password to a file with permission 0o600 to be secure
-        password_file = os.path.expanduser("~") + '/.xbutil-gui-tmp'
-        with open(password_file, 'w') as fh:
-            os.chmod(password_file, 0o600)
-            fh.write(sudo_password)
+    def get_devices(self, hosts):
 
-        lspci_cmd = 'sudo -S <<< $(cat ~/.xbutil-gui-tmp) lspci -d 10ee: -vv'
         self.pcie_dict = {}
         for host in hosts:
             self.pcie_dict[host] = {}
             if host == 'localhost':
-                command = lspci_cmd
+                command = 'bash -c \"sudo -S <<< $(cat ~/.xbutil-gui-tmp) lspci -d 10ee: -vv\"'
             else:
-                command = 'ssh ' + host + ' ' + lspci_cmd
+                command = 'ssh ' + host + \
+                          ' bash -l -c \\"sudo -S <<< $(cat ~/.xbutil-gui-tmp) lspci -d 10ee: -vv\\"'
 
-            #print('INFO: run {} on host {}'.format(command, host))
+            print('INFO: run {} on host {}'.format(command, host))
             p = subprocess.Popen(command, stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, shell=True)
             lspci_out = p.stdout.read().decode('utf-8')
+            p_returncode = p.wait()
+            print('p_returncode=', p_returncode)
+            if p_returncode != 0:
+                print(lspci_out)
+
             lspci_lines = lspci_out.split('\n')
-            first_line = True
             is_function1 = False
             for line in lspci_lines:
                 if line.strip() == "":
                     continue
-
-                if first_line and line.startswith('Password:'):
-                    line = line[len('Password:'):]
-                    first_line = False
 
                 if not line[0].isspace():
                     fields = line.split()
