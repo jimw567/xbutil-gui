@@ -62,6 +62,22 @@ class XbutilTop:
 
                     self.top_dicts[host_device_key]['device_memory'].append(m_dict)
 
+            # compute units
+            cu_new_usage = False
+            for c in d['compute_units']:
+                ba = c['base_address']
+                usage = int(c['usage'])
+                if self.top_dicts[host_device_key]['compute_units'].get(ba):
+                    self.top_dicts[host_device_key]['compute_units'][ba]['usage'] = usage
+                else:
+                    self.top_dicts[host_device_key]['compute_units'][ba] = {'usage': usage}
+
+                prev_usage = self.top_dicts[host_device_key]['compute_units'][ba].get('prev_usage')
+                if prev_usage and usage > prev_usage:
+                    cu_new_usage = True
+                    self.top_dicts[host_device_key]['compute_units'][ba]['last_usage'] = \
+                        usage - prev_usage
+
             # DMA transfer metrics
             for t in d['mem_topology']['board']['direct_memory_accesses']['metrics']:
                 ch = t['channel_id']
@@ -76,28 +92,17 @@ class XbutilTop:
 
                 prev_h2c = self.top_dicts[host_device_key]['dma_metrics'][ch].get('prev_h2c')
                 prev_c2h = self.top_dicts[host_device_key]['dma_metrics'][ch].get('prev_c2h')
-                if prev_h2c and h2c > prev_h2c:
+                # only update once CU usage is recorded
+                if cu_new_usage and prev_h2c and h2c > prev_h2c:
                     self.top_dicts[host_device_key]['dma_metrics'][ch]['last_h2c'] = \
                         h2c - prev_h2c
-                if prev_c2h and c2h > prev_c2h:
+                if cu_new_usage and prev_c2h and c2h > prev_c2h:
                     self.top_dicts[host_device_key]['dma_metrics'][ch]['last_c2h'] = \
                         c2h - prev_c2h
 
-            # compute units
-            for c in d['compute_units']:
-                ba = c['base_address']
-                usage = int(c['usage'])
-                if self.top_dicts[host_device_key]['compute_units'].get(ba):
-                    self.top_dicts[host_device_key]['compute_units'][ba]['usage'] = usage
-                else:
-                    self.top_dicts[host_device_key]['compute_units'][ba] = {'usage': usage}
-
-                prev_usage = self.top_dicts[host_device_key]['compute_units'][ba].get('prev_usage')
-                if prev_usage and usage > prev_usage:
-                    self.top_dicts[host_device_key]['compute_units'][ba]['last_usage'] = \
-                        usage - prev_usage
-
+    ###########################################################################
     # show top info
+    ###########################################################################
     def show_top_info(self):
         if self.window_top is None or not tk.Toplevel.winfo_exists(self.window_top):
             return
@@ -116,15 +121,16 @@ class XbutilTop:
 
         self.text_top.insert(tk.END, 'Device Memory Usage:\n')
         MEM_INFO_HEADER_FORMAT = '{0:12s}|{1:12s}|{2:8s}|{3:12s}|{4:20s}'
-        MEM_INFO_FORMAT = '{0:12s}|{1:12s}|{2:<8d}|{3:<12d}|{4:<20d}'
+        MEM_INFO_FORMAT = '{0:12s}|{1:12s}|{2:<8d}|{3:<12d}|{4:>15s}'
 
         self.text_top.insert(tk.END,
                         MEM_INFO_HEADER_FORMAT.format('Tag', 'Type', 'Temp', 'Size(MB)', 'Usage'))
         self.text_top.insert(tk.END, '\n')
 
         for m in top_dict['device_memory']:
+            m_usage = m['usage']
             self.text_top.insert(tk.END,
-                            MEM_INFO_FORMAT.format(m['tag'], m['type'], m['temp'], m['size'], m['usage']))
+                MEM_INFO_FORMAT.format(m['tag'], m['type'], m['temp'], m['size'], f'{m_usage:,}'))
             self.text_top.insert(tk.END, '\n')
 
         self.text_top.insert(tk.END, '\nPower: ' + str(top_dict['power']) + 'W\n')
@@ -132,10 +138,10 @@ class XbutilTop:
         self.text_top.insert(tk.END, '\nTotal DMA Transfer Metrics:\n')
         for ch in top_dict['dma_metrics'].keys():
             ch_m = top_dict['dma_metrics'][ch]
-            self.text_top.insert(tk.END, 'Channel ' + ch + ': host to card ' +
-                            str(ch_m['h2c']) + '\n')
-            self.text_top.insert(tk.END, 'Channel ' + ch + ': card to host ' +
-                            str(ch_m['c2h']) + '\n')
+            h2c = ch_m['h2c']
+            c2h = ch_m['c2h'] 
+            self.text_top.insert(tk.END, 'Channel ' + ch + ': host to card ' + f'{h2c:,}' + '\n')
+            self.text_top.insert(tk.END, 'Channel ' + ch + ': card to host ' + f'{c2h:,}' '\n')
 
         self.text_top.insert(tk.END, '\nCompute Unit Usage:\n')
         for ba in top_dict['compute_units'].keys():
@@ -152,11 +158,11 @@ class XbutilTop:
             last_h2c = top_dict['dma_metrics'][ch].get('last_h2c')
             if last_h2c:
                 self.text_top.insert(tk.END, 'Channel ' + ch + ': host to card ' +
-                            str(last_h2c) + '\n')
+                            f'{last_h2c:,}' + '\n')
             last_c2h = top_dict['dma_metrics'][ch].get('last_c2h')
             if last_c2h:
                 self.text_top.insert(tk.END, 'Channel ' + ch + ': card to host ' +
-                            str(last_c2h) + '\n')
+                            f'{last_c2h:,}' + '\n')
 
         self.text_top.yview(tk.END)
 

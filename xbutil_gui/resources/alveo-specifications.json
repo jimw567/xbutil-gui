@@ -6,8 +6,17 @@
             "fatal": 110
         }
     },
+    "u55": {
+        "fpga_temp": {
+            "warning": 88,
+            "critical": 97,
+            "fatal": 110
+        }
+    },    
     "shell_board_lut": {
-        "xilinx_u50_gen3x16_xdma_201920_3": "u50"
+        "xilinx_u50_gen3x16_xdma_201920_3": "u50",
+        "xilinx_u55c_gen3x16_xdma_base_1": "u55",
+        "u50": "u50"
     },
     "NA": {
         "fpga_temp": {

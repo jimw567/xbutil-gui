@@ -120,7 +120,7 @@ root_window.columnconfigure(4, weight=0, minsize=150)
 root_window.columnconfigure(5, weight=1, minsize=150)
 
 cur_grid_row = 0
-label_cluster = ttk.Label(root_window, text="Cluster", width=LABEL_WIDTH, anchor='w')
+label_cluster = ttk.Label(root_window, text="Cluster", width=10, anchor='w')
 label_cluster.grid(row=cur_grid_row, column=0,  sticky='w', pady=10)
 combo_cluster = ttk.Combobox(root_window, width=COMBO_WIDTH)
 combo_cluster['values'] = []
@@ -277,6 +277,22 @@ def update_sheet_cluster(devices_compute_units, xbutil_dump_json, selected_clust
         auto_refresh_sheet_row = 1
 
 
+# dump log file
+def dump_log_file():
+    global log_file, sheet_cluster
+
+    if log_file is None:
+        return
+
+    with open(log_file, 'w') as fp:
+        for r in range(sheet_cluster_last_row):
+            d = sheet_cluster.get_row_data(r)
+            fp.write(f'{d[0]:15}|{d[1]:50}|{d[2]:50}|{d[3]:10}|{d[4]:8}|{d[5]:10}|{d[6]:8}|{d[7]:20}')
+            fp.write('\n')
+            fp.write(f'{"-"*15}+{"-"*50}+{"-"*50}+{"-"*10}+{"-"*8}+{"-"*10}+{"-"*8}+{"-"*20}')
+            fp.write('\n')
+
+
 # get xbutil dump from each host in round robin fashion every XBUTIL_REFRESH_INTERVAL
 def refresh_database(json_file):
     global auto_refresh_plot_seconds, auto_refresh_host_idx, cur_cluster_name, \
@@ -310,6 +326,8 @@ def refresh_database(json_file):
         if auto_refresh_host_idx == len(clusters[selected_cluster_name]):
             auto_refresh_host_idx = 0
 
+    dump_log_file()
+
     # add refresh_database back to the eventloop
     auto_refresh_plot_seconds = auto_refresh_plot_seconds + DEFAULT_XBUTIL_REFRESH_INTERVAL
     root_window.after(DEFAULT_XBUTIL_REFRESH_INTERVAL*1000, refresh_database, json_file)
@@ -317,15 +335,17 @@ def refresh_database(json_file):
 
 def main():
     global plot_metric, cur_cluster_name, clusters, auto_refresh_host_idx, \
-           auto_refresh_sheet_row, alveo_spec_dict, no_sudo_passwd
+           auto_refresh_sheet_row, alveo_spec_dict, no_sudo_passwd, log_file
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--json-file', dest='json_file', default=None,
                         help='Specify a JSON file for getting the data')
     parser.add_argument('--no-sudo-passwd', action='store_true', dest='no_sudo_passwd', 
                         help='Do not prompt for sudo password')
+    parser.add_argument('--log', dest='log_file', default=None, help='Sepcify text log file')
     args = parser.parse_args()
     no_sudo_passwd = args.no_sudo_passwd
+    log_file = args.log_file
 
     home = os.path.expanduser("~")
     user_config_file = home + '/xbutil-gui-config.json'

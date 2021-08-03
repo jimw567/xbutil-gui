@@ -15,22 +15,24 @@ import re
 from xbutil_gui import VERSION, LABEL_WIDTH
 
 SHEET_DEVICES_TOTAL_ROWS = 200
-SHEET_DEVICES_TOTAL_COLS = 9
+SHEET_DEVICES_TOTAL_COLS = 10
 SHEET_DEVICES_HOST_COL = 0
-SHEET_DEVICES_PCIE_BDF_COL = 1
-SHEET_DEVICES_DEVICE_COL = 2
-SHEET_DEVICES_PCIE_CAP_SPEED_COL = 3
-SHEET_DEVICES_PCIE_STA_SPEED_COL = 4
-SHEET_DEVICES_PCIE_CAP_WIDTH_COL = 5
-SHEET_DEVICES_PCIE_STA_WIDTH_COL = 6
-SHEET_DEVICES_PCIE_WR_BW_COL = 7
-SHEET_DEVICES_PCIE_RD_BW_COL = 8
+SHEET_DEVICES_NUMA_COL = 1
+SHEET_DEVICES_PCIE_BDF_COL = 2
+SHEET_DEVICES_DEVICE_COL = 3
+SHEET_DEVICES_PCIE_CAP_SPEED_COL = 4
+SHEET_DEVICES_PCIE_STA_SPEED_COL = 5
+SHEET_DEVICES_PCIE_CAP_WIDTH_COL = 6
+SHEET_DEVICES_PCIE_STA_WIDTH_COL = 7
+SHEET_DEVICES_PCIE_WR_BW_COL = 8
+SHEET_DEVICES_PCIE_RD_BW_COL = 9
 
 
 class DeviceManager:
     def __init__(self):
         self.selected_cluster_name = None
         self.pcie_dict = {}
+        self.numa_dict = {}
         self.alveo_spec_dict = None
 
         # members for GUI
@@ -67,12 +69,16 @@ class DeviceManager:
         for row in range(1, self.sheet_last_row):
             host = self.sheet_data_shadow[row]['host']
             bdf = self.sheet_data_shadow[row]['bdf']
+            numa = self.sheet_data_shadow[row]['numa']
+            cpus = self.numa_dict[numa]
+
             self.text_log.insert(tk.END, dash_line)
             self.text_log.insert(tk.END, 'Validating device ' + bdf + \
                                          ' on host ' + host + '\n')
             self.text_log.insert(tk.END, dash_line)
 
-            xbutil_command = '/opt/xilinx/xrt/bin/xbutil --new validate -d ' + bdf
+            xbutil_command = 'taskset -c ' + cpus + \
+                             ' /opt/xilinx/xrt/bin/xbutil --new validate -d ' + bdf
             if host == 'localhost':
                 command = xbutil_command
             else:
@@ -134,8 +140,51 @@ class DeviceManager:
         #
         # print('INFO: Completed flashing all devices')
 
-    def get_devices(self, hosts):
+    def get_numa(self, hosts):
+        for host in hosts:
+            self.numa_dict[host] = {}
+            if host == 'localhost':
+                command = 'lscpu'
+            else:
+                command = 'ssh ' + host + ' lscpu'
 
+            #print('INFO: run {} on host {}'.format(command, host))
+            p = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT, shell=True)
+            p_out = p.stdout.read().decode('utf-8')
+            p_returncode = p.wait()
+            if p_returncode != 0:
+                print(p_out)
+
+            p_lines = p_out.split('\n')
+            re_numa = re.compile('NUMA (.*) CPU.*:\s+(.*)')
+            for line in p_lines:
+                m = re_numa.search(line)
+                if m:
+                    self.numa_dict[m.group(1)] = m.group(2)
+
+    def get_bdf_numa(self, host, bdf):
+        command = 'cat /sys/bus/pci/devices/0000\:' + bdf + '/numa_node'
+        if host != 'localhost':
+            command = 'ssh ' + host + ' ' + command
+
+        #print('INFO: run {} on host {}'.format(command, host))
+        p = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, shell=True)
+        p_out = p.stdout.read().decode('utf-8')
+        p_returncode = p.wait()
+        if p_returncode != 0:
+            print(p_out)
+        p_lines = p_out.split('\n')
+        for line in p_lines:
+            if line.strip() == "":
+                continue
+            last_line = line
+
+        return 'node' + last_line.strip()
+
+    def get_devices(self, hosts):
+        self.get_numa(hosts)
         self.pcie_dict = {}
         for host in hosts:
             self.pcie_dict[host] = {}
@@ -145,12 +194,11 @@ class DeviceManager:
                 command = 'ssh ' + host + \
                           ' bash -l -c \\"sudo -S <<< $(cat ~/.xbutil-gui-tmp) lspci -d 10ee: -vv\\"'
 
-            print('INFO: run {} on host {}'.format(command, host))
+            #print('INFO: run {} on host {}'.format(command, host))
             p = subprocess.Popen(command, stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT, shell=True)
             lspci_out = p.stdout.read().decode('utf-8')
             p_returncode = p.wait()
-            print('p_returncode=', p_returncode)
             if p_returncode != 0:
                 print(lspci_out)
 
@@ -167,6 +215,7 @@ class DeviceManager:
                         is_function1 = True
                         device_id = fields[-1]
                         self.pcie_dict[host][bdf] = {
+                            'numa' : self.get_bdf_numa(host, bdf),
                             'device_id': device_id,
                             'device': self.alveo_spec_dict['pcie_device_ids'][device_id],
                             'pcie_wrbw': '--',
@@ -191,11 +240,13 @@ class DeviceManager:
         row = 1
         for host in self.pcie_dict.keys():
             for bdf in self.pcie_dict[host].keys():
+                numa =self.pcie_dict[host][bdf]['numa']
                 lnkcap_speed = self.pcie_dict[host][bdf]['LnkCapSpeed']
                 lnksta_speed = self.pcie_dict[host][bdf]['LnkStaSpeed']
                 lnkcap_width = self.pcie_dict[host][bdf]['LnkCapWidth']
                 lnksta_width = self.pcie_dict[host][bdf]['LnkStaWidth']
                 self.sheet_devices.set_cell_data(row, SHEET_DEVICES_HOST_COL, host)
+                self.sheet_devices.set_cell_data(row, SHEET_DEVICES_NUMA_COL, numa)
                 self.sheet_devices.set_cell_data(row, SHEET_DEVICES_PCIE_BDF_COL, bdf)
                 self.sheet_devices.set_cell_data(row, SHEET_DEVICES_DEVICE_COL,
                                                  self.pcie_dict[host][bdf]['device'])
@@ -213,7 +264,7 @@ class DeviceManager:
                 if lnkcap_width != lnksta_width:
                     self.sheet_devices.highlight_cells(row, SHEET_DEVICES_PCIE_STA_WIDTH_COL, bg='red')
 
-                self.sheet_data_shadow[row] = {'host': host, 'bdf': bdf}
+                self.sheet_data_shadow[row] = {'host': host, 'bdf': bdf, 'numa': numa}
                 row = row + 1
 
         self.sheet_last_row = row
@@ -271,6 +322,7 @@ class DeviceManager:
                                        "edit_cell"))
         self.sheet_devices.grid(row=cur_grid_row, columnspan=6, sticky='nswe')
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_HOST_COL, 'Host')
+        self.sheet_devices.set_cell_data(0, SHEET_DEVICES_NUMA_COL, 'NUMA')
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_PCIE_BDF_COL, 'PCIe BDF')
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_DEVICE_COL, 'Device')
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_PCIE_CAP_SPEED_COL, 'LnkCap Spd')
@@ -280,8 +332,9 @@ class DeviceManager:
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_PCIE_WR_BW_COL, 'PCIeWr GB/s')
         self.sheet_devices.set_cell_data(0, SHEET_DEVICES_PCIE_RD_BW_COL, 'PCIeRd GB/s')
         self.sheet_devices.column_width(column=SHEET_DEVICES_HOST_COL, width=150)
+        self.sheet_devices.column_width(column=SHEET_DEVICES_NUMA_COL, width=60)
         self.sheet_devices.column_width(column=SHEET_DEVICES_PCIE_BDF_COL, width=100)
-        self.sheet_devices.column_width(column=SHEET_DEVICES_DEVICE_COL, width=250)
+        self.sheet_devices.column_width(column=SHEET_DEVICES_DEVICE_COL, width=150)
         self.sheet_devices.column_width(column=SHEET_DEVICES_PCIE_CAP_SPEED_COL, width=75)
         self.sheet_devices.column_width(column=SHEET_DEVICES_PCIE_STA_SPEED_COL, width=75)
         self.sheet_devices.column_width(column=SHEET_DEVICES_PCIE_CAP_WIDTH_COL, width=75)

@@ -45,6 +45,8 @@ class PlotMetrics:
         self.temp_hist = {}
         self.vccint_hist = {}
         self.iccint_hist = {}
+        self.vcc3v3_pex_hist = {}
+        self.icc3v3_pex_hist = {}
 
     def get_last_metrics(self, host, device_id_name):
         host_device_key = host + device_id_name
@@ -110,6 +112,20 @@ class PlotMetrics:
             self.plot_hist.right_ax.set_ylabel('Iccint(A)')
             self.plot_hist.set_title('Vccint(V)/Iccint(A) History')
             self.canvas_hist.draw()
+        elif self.plot_metric == 'vcc3v3_pex/icc3v3_pex':
+            y_hist_dict = {'time': self.time_hist[host_device_key][::index_step],
+                           'vcc3v3_pex': self.vcc3v3_pex_hist[host_device_key][::index_step],
+                           'icc3v3_pex': self.icc3v3_pex_hist[host_device_key][::index_step]}
+            y_hist_df = DataFrame(y_hist_dict, columns=['time', 'vcc3v3_pex', 'icc3v3_pex'])
+            y_hist_df.plot(kind='line', legend=True, x='time', y='vcc3v3_pex', ax=self.plot_hist,
+                           color='r', marker='.', fontsize=10)
+            self.plot_hist_twinx = y_hist_df['icc3v3_pex'].plot(
+                kind='line', legend=True, ax=self.plot_hist,
+                color='b', marker='.', fontsize=10, secondary_y=True)
+            self.plot_hist.set_ylabel('Vcc3v3_pex(V)')
+            self.plot_hist.right_ax.set_ylabel('Icc3v3_pex(A)')
+            self.plot_hist.set_title('Vcc3v3_pex(V)/Icc3v3_pex(A) History')
+            self.canvas_hist.draw()            
 
     def show_plot_window(self, root_window, selected_host, selected_device_id_name):
         self.selected_host = selected_host
@@ -142,7 +158,7 @@ class PlotMetrics:
         lable_plot_metric = ttk.Label(self.window_plot, text="Plot metric").grid(
             row=cur_grid_row, column=0, sticky='e')
         self.combo_plot_metric = ttk.Combobox(self.window_plot, width=COMBO_WIDTH)
-        self.combo_plot_metric['values'] = ('power/temperature', 'vccint/iccint')
+        self.combo_plot_metric['values'] = ('power/temperature', 'vccint/iccint', 'vcc3v3_pex/icc3v3_pex')
         self.combo_plot_metric.grid(row=cur_grid_row, column=1, sticky='w')
         cur_grid_row = cur_grid_row + 1
         self.combo_plot_metric.current(0)
@@ -178,7 +194,9 @@ class PlotMetrics:
             self.temp_hist[host_device_key] = []
             self.vccint_hist[host_device_key] = []
             self.iccint_hist[host_device_key] = []
-
+            self.vcc3v3_pex_hist[host_device_key] = []
+            self.icc3v3_pex_hist[host_device_key] = []
+            
         fpga_present = False
         for dev in xbutil_dump_json['devices']:
             if dev['device_id'] != device_id:
@@ -204,3 +222,6 @@ class PlotMetrics:
                 if pr['id'] == 'vccint':
                     self.vccint_hist[host_device_key].append(float(pr['voltage']['volts']))
                     self.iccint_hist[host_device_key].append(float(pr['current']['amps']))
+                elif pr['id'] == '3v3_pex':
+                    self.vcc3v3_pex_hist[host_device_key].append(float(pr['voltage']['volts']))
+                    self.icc3v3_pex_hist[host_device_key].append(float(pr['current']['amps']))

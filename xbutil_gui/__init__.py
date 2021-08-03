@@ -8,7 +8,7 @@ if sys.version_info[0] < 2 or (sys.version_info[0] == 3 and sys.version_info[1] 
     sys.exit('ERROR: This program require Python 3.6 or newer. You are running %s' %
              '.'.join(map(str, sys.version_info[0:3])))
 
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 LABEL_WIDTH = 15
 COMBO_WIDTH = 40
 FIGURE_DPI = 100
