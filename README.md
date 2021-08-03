@@ -15,7 +15,6 @@ need to have SSH authentication key set up so you can run commands on remote
 hosts with your username and without password. Follow instructions 
 on the [SSH Login without password](https://github.com/jimw567/xbutil-gui/wiki/SSH-login-without-password) page to set up SSH authentication key.
 
-
 ## Python
 This program requires Python 3.6 or newer to run. 
 
@@ -41,10 +40,10 @@ python3.6 -m venv venv
 . venv/bin/activate
 ```
 
-### Install xbutil GUI as a regular user
+## Install xbutil GUI as a regular user
 `pip install xbutil_gui`
 
-### Install xbutil GUI as a contributor
+## Install xbutil GUI as a contributor
 ```
 git clone https://github.com/jimw567/xbutil-gui.git
 cd xbutil-gui
@@ -52,10 +51,10 @@ pip install -r requirements.txt`
 python setup.py develop
 ```
 
-## Run xbutil-gui
+# Run xbutil-gui
 `xbutil_gui`
 
-# Snapshots
+## Snapshots
 ## Main window showing all hosts/devices/compute units in a cluster
 ![image](https://user-images.githubusercontent.com/24323762/108950146-9a024780-761a-11eb-92e7-1ad8df0409d5.png)
 
@@ -67,3 +66,13 @@ python setup.py develop
 
 ## Vccint/Iccint plot
 ![image](https://user-images.githubusercontent.com/24323762/108950325-e2ba0080-761a-11eb-8392-d220b9e90634.png)
+
+# Publish xbutil_gui to PyPI
+`./scripts/publish-pypi.sh`
+
+The following modules may need to be upgraded or installed:
+```
+pip install --upgrade pip
+pip install twine
+```
+
