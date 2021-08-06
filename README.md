@@ -3,7 +3,7 @@ A Python Tkinter GUI for Xilinx Vitis xbutil program
 
 # Installation
 ## OS
-xbutil-gui has been tested on CentOS 7.8 and Ubuntu 16.04.
+xbutil-gui has been tested on CentOS 7.8 and Ubuntu 16.04/18.04.
 
 ## Xilinx XRT
 [Xilinx XRT](https://github.com/Xilinx/XRT) version 2.8.0 or newer is required 
@@ -31,7 +31,7 @@ sudo apt-get install python3.6 python3.6-venv python3.6-tk
 The default Python on CentOS 7.8 is already version 3.6. You only need to 
 install Python Tkinter.
 ```
-sudo yum install python36-tkinter
+sudo yum install python36-tkinter python3-tkinter
 ```
 
 ## Create and activate a Python3 virtual environment
@@ -54,6 +54,16 @@ python setup.py develop
 # Run xbutil-gui
 `xbutil_gui`
 
+## Configuration File
+xbutil_gui only scans the localhost for Alveo cards by default. You can create a configuration $HOME/xbutil-gui-config.json and add additional servers. Below is an example of xbutil-gui-config.json file
+```
+{
+    "clusters": {
+        "fpga-cluster1" : ["fpga-node1", "fpga-node2"],
+        "localhost": ["localhost"]
+    }
+}
+```
 ## Snapshots
 ## Main window showing all hosts/devices/compute units in a cluster
 ![image](https://user-images.githubusercontent.com/24323762/108950146-9a024780-761a-11eb-92e7-1ad8df0409d5.png)
