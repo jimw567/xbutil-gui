@@ -337,6 +337,11 @@ def main():
     global plot_metric, cur_cluster_name, clusters, auto_refresh_host_idx, \
            auto_refresh_sheet_row, alveo_spec_dict, no_sudo_passwd, log_file
 
+    # First check if XRT is installed
+    if not Path('/opt/xilinx/xrt/bin/unwrapped/xbutil2').exists():
+        print('ERROR: Xilinx XRT needs to be installed')
+        return
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--json-file', dest='json_file', default=None,
                         help='Specify a JSON file for getting the data')
